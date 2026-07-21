@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>釜山 8 天 7 夜｜互動行程地圖</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <style>
+    :root { --ink:#1f2937; --muted:#667085; --line:#e5e7eb; --surface:#fff; --accent:#d53f46; --soft:#fff5f5; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:#f6f7f9; font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","Microsoft JhengHei",sans-serif; }
+    header { padding:20px 26px 14px; background:var(--surface); border-bottom:1px solid var(--line); }
+    h1 { margin:0 0 6px; font-size:23px; font-weight:700; }
+    header p { margin:0; color:var(--muted); font-size:14px; }
+    .layout { display:grid; grid-template-columns:minmax(310px, 43%) 1fr; gap:0; min-height:calc(100vh - 92px); }
+    .itinerary { padding:18px; overflow:auto; background:var(--surface); border-right:1px solid var(--line); }
+    .day { margin:0 0 18px; }
+    .day h2 { margin:0 0 8px; font-size:16px; font-weight:700; }
+    .day h2 span { color:var(--muted); font-size:13px; font-weight:500; }
+    .place { width:100%; appearance:none; border:1px solid var(--line); background:var(--surface); color:var(--ink); border-radius:10px; cursor:pointer; display:block; margin:6px 0; padding:10px 12px; text-align:left; font:inherit; transition:.16s ease; }
+    .place:hover, .place:focus { border-color:var(--accent); background:var(--soft); outline:none; }
+    .place.is-active { border-color:var(--accent); box-shadow:0 0 0 2px rgba(213,63,70,.14); background:var(--soft); }
+    .place strong { display:block; font-size:14px; }
+    .place small { display:block; margin-top:3px; color:var(--muted); font-size:12px; line-height:1.4; }
+    .map-area { position:sticky; top:0; height:calc(100vh - 92px); }
+    .map-tools { align-items:center; background:var(--surface); border-bottom:1px solid var(--line); display:flex; gap:8px; padding:10px 14px; }
+    .map-tools button, .map-tools a { border:1px solid var(--line); border-radius:8px; background:var(--surface); color:var(--ink); cursor:pointer; font:inherit; font-size:13px; padding:7px 10px; text-decoration:none; }
+    .map-tools button.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+    .map-tools .selected { color:var(--muted); font-size:13px; margin-left:auto; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    #overview, #google-map { height:calc(100% - 51px); width:100%; }
+    #google-map { border:0; }
+    .pin { align-items:center; background:var(--accent); border:2px solid #fff; border-radius:50%; color:#fff; display:flex; font:700 11px/1 sans-serif; height:25px; justify-content:center; width:25px; }
+    .leaflet-popup-content { font-family:inherit; }
+    .leaflet-popup-content b { display:block; margin-bottom:3px; }
+    @media (max-width:760px) { .layout { grid-template-columns:1fr; } .itinerary { border-right:0; border-bottom:1px solid var(--line); max-height:47vh; } .map-area { height:53vh; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>釜山 8 天 7 夜｜互動行程地圖</h1>
+    <p>點選左側任一地點，右側會切換至 Google 地圖定位；「所有圖釘」可總覽全部行程地點。</p>
+  </header>
+  <main class="layout">
+    <section class="itinerary" aria-label="行程">
+      <div class="day"><h2>Day 1 <span>11/14（六）抵達西面</span></h2>
+        <button class="place" data-id="gimhae"><strong>金海國際機場</strong><small>20:00 抵達｜停留約 1 小時 15 分：入境、領行李、T-money</small></button>
+        <button class="place" data-id="angel"><strong>Hotel Angel（西面）｜先放行李／Check-in</strong><small>22:15 抵達｜停留約 15 分鐘：放行李、辦理入住<br>交通：機場輕軌「機場站」→ 沙上站，轉地鐵 2 號線至西面站；從 7 號出口步行約 5 分鐘</small></button>
+        <button class="place" data-id="seomyeon"><strong>西面站／西面一號街｜飯店附近逛逛</strong><small>22:30 抵達｜停留約 1.5 小時：夜市、宵夜；再步行回飯店<br>最近：西面站 7 號出口，步行約 5 分鐘</small></button>
+        <button class="place" data-id="angel"><strong>Hotel Angel（西面）｜返回住宿</strong><small>00:00 抵達｜11/14 住宿 1 晚</small></button>
+      </div>
+      <div class="day"><h2>Day 2 <span>11/15（日）影島與南浦洞</span></h2>
+        <button class="place" data-id="angel"><strong>Hotel Angel（西面）｜出發</strong><small>09:30 出發｜Check-out 後攜帶／寄放行李<br>最近：西面站 7 號出口，步行約 5 分鐘</small></button>
+        <button class="place" data-id="huinnyeoul"><strong>白淺灘文化村</strong><small>10:30 抵達｜停留約 2 小時：海岸散步、咖啡<br>交通：西面站→南浦站；南浦洞巴士站轉公車至「白淺灘文化村」</small></button>
+        <button class="place" data-id="gamcheon"><strong>甘川文化村</strong><small>13:30 抵達｜停留約 2 小時：彩色山城與小王子<br>交通：土城站 6 號出口，轉社區巴士至「甘川文化村」</small></button>
+        <button class="place" data-id="lottegwangbok"><strong>樂天百貨光復店</strong><small>18:00 抵達｜停留約 1 小時：釜山港夜景<br>最近：南浦站 7 號出口，步行約 8 分鐘</small></button>
+        <button class="place" data-id="biff"><strong>BIFF 廣場／國際市場</strong><small>19:15 抵達｜停留約 2.5 小時：晚餐、黑糖餅、逛街<br>最近：札嘎其站 7 號出口／南浦站 1 號出口</small></button>
+        <button class="place" data-id="lenith"><strong>HOTEL LENITH Seomyeon｜到達／住宿</strong><small>22:30 抵達｜11/15–11/21 住宿 6 晚<br>最近：西面站 7 號出口，步行約 6 分鐘</small></button>
+      </div>
+      <div class="day"><h2>Day 3 <span>11/16（一）機張 PASS</span></h2>
+        <button class="place" data-id="lenith"><strong>HOTEL LENITH Seomyeon｜出發</strong><small>09:15 出發｜前往東海線機張方向<br>最近：西面站 7 號出口，步行約 6 分鐘</small></button>
+        <button class="place" data-id="gijang"><strong>機張市場</strong><small>10:30 抵達｜停留約 1.5 小時：螃蟹午餐<br>最近：東海線「機張站」；市場步行約 10 分鐘</small></button>
+        <button class="place" data-id="luge"><strong>Skyline Luge 釜山</strong><small>12:30 抵達｜停留約 1.5 小時：PASS 啟用、滑車 2 回<br>最近：東海線「OSIRIA 站」；東釜山觀光園區巴士站</small></button>
+        <button class="place" data-id="lotteworld"><strong>樂天世界釜山</strong><small>14:15 抵達｜停留約 4 小時：遊樂設施、城堡拍照<br>最近：OSIRIA 站／東釜山觀光園區巴士站</small></button>
+        <button class="place" data-id="lottemart"><strong>樂天百貨釜山本店</strong><small>19:30 抵達｜停留約 1 小時：西面補貨<br>最近：西面站 7 號出口，百貨 B2</small></button>
+        <button class="place" data-id="lenith"><strong>HOTEL LENITH Seomyeon｜返回住宿</strong><small>21:00 抵達｜休息、整理 PASS 與戰利品</small></button>
+      </div>
+      <div class="day"><h2>Day 4 <span>11/17（二）海雲台 PASS</span></h2>
+        <button class="place" data-id="lenith"><strong>HOTEL LENITH Seomyeon｜出發</strong><small>09:00 出發｜地鐵 2 號線往海雲台方向</small></button>
+        <button class="place" data-id="mipo"><strong>尾浦站／海雲台藍線公園</strong><small>10:00 抵達｜停留約 1 小時：PASS 兌換海岸列車<br>最近：中洞站 7 號出口後轉公車／計程車至尾浦</small></button>
+        <button class="place" data-id="cheongsapo"><strong>青沙浦</strong><small>11:15 抵達｜停留約 2 小時：平交道、燈塔、烤貝午餐<br>交通：海雲台藍線海岸列車「青沙浦站」下車</small></button>
+        <button class="place" data-id="xthesky"><strong>BUSAN X the SKY</strong><small>14:00 抵達｜停留約 1.5 小時：PASS 觀景台、最高星巴克<br>最近：中洞站 7 號出口，步行約 10 分鐘</small></button>
+        <button class="place" data-id="spaland"><strong>Spa Land Centum City</strong><small>16:30 抵達｜停留約 4 小時：PASS 汗蒸幕<br>最近：Centum City 站 12 號出口，與新世界百貨相連</small></button>
+        <button class="place" data-id="lenith"><strong>HOTEL LENITH Seomyeon｜返回住宿</strong><small>21:15 抵達｜Centum City 站搭地鐵 2 號線直達西面站</small></button>
+      </div>
+      <div class="day"><h2>Day 5 <span>11/18（三）松島與廣安里</span></h2>
+        <button class="place" data-id="lenith"><strong>HOTEL LENITH Seomyeon｜出發</strong><small>09:10 出發｜前往南浦／松島方向</small></button>
+        <button class="place" data-id="songdo"><strong>松島海上纜車</strong><small>10:00 抵達｜停留約 2 小時：PASS 水晶車廂往返<br>交通：札嘎其站／南浦站轉公車至「松島纜車」巴士站</small></button>
+        <button class="place" data-id="songdobridge"><strong>松島龍宮雲橋</strong><small>12:15 抵達｜停留約 45 分鐘：海景步道<br>交通：纜車松島灣站附近轉接駁／計程車較省時</small></button>
+        <button class="place" data-id="jeonpo"><strong>田浦咖啡街</strong><small>15:30 抵達｜停留約 2 小時：咖啡與選物店<br>最近：田浦站 7 號出口，步行約 3 分鐘</small></button>
+        <button class="place" data-id="gwanganli"><strong>廣安里海灘</strong><small>18:30 抵達｜停留約 3 小時：晚餐、廣安大橋夜景<br>最近：金蓮山站 1／3 號出口，步行約 10 分鐘</small></button>
+        <button class="place" data-id="lenith"><strong>HOTEL LENITH Seomyeon｜返回住宿</strong><small>22:00 抵達｜金蓮山站搭地鐵 2 號線直達西面站</small></button>
+      </div>
+      <div class="day"><h2>Day 6 <span>11/19（四）G‑STAR</span></h2>
+        <button class="place" data-id="lenith"><strong>HOTEL LENITH Seomyeon｜出發</strong><small>07:15 出發｜地鐵 2 號線至 Centum City 站</small></button>
+        <button class="place" data-id="bexco"><strong>BEXCO 釜山會展中心</strong><small>08:00 抵達｜停留約 9 小時：G‑STAR 排隊、入場與參觀<br>最近：Centum City 站 1 號出口約 50 公尺／市立美術館站 7 號出口約 100 公尺</small></button>
+        <button class="place" data-id="lenith"><strong>HOTEL LENITH Seomyeon｜返回住宿</strong><small>18:15 抵達｜BEXCO 周邊晚餐後可再彈性調整</small></button>
+      </div>
+      <div class="day"><h2>Day 7 <span>11/20（五）西面採購與夜景</span></h2>
+        <button class="place" data-id="lenith"><strong>HOTEL LENITH Seomyeon｜出發</strong><small>10:30 出發｜西面周邊步行／地鐵移動</small></button>
+        <button class="place" data-id="citizenpark"><strong>釜山市民公園</strong><small>11:00 抵達｜停留約 1.5 小時：悠閒散步（彈性）<br>最近：釜田站／楊亭站，步行約 10–15 分鐘</small></button>
+        <button class="place" data-id="emart"><strong>E-mart 門峴店</strong><small>14:00 抵達｜停留約 2 小時：伴手禮、泡麵、退稅<br>最近：門峴站 3 號出口，步行約 8 分鐘</small></button>
+        <button class="place" data-id="hwangnyeongsan"><strong>荒嶺山烽燧臺</strong><small>19:00 抵達｜停留約 1.5 小時：360° 夜景<br>交通：西面飯店出發建議計程車；山頂無鄰近地鐵站</small></button>
+        <button class="place" data-id="lenith"><strong>HOTEL LENITH Seomyeon｜返回住宿</strong><small>21:15 抵達｜荒嶺山下山後搭計程車回飯店</small></button>
+      </div>
+      <div class="day"><h2>Day 8 <span>11/21（六）返程</span></h2>
+        <button class="place" data-id="lenith"><strong>HOTEL LENITH Seomyeon｜出發／退房</strong><small>11:00 退房｜可先寄放行李；17:00 取行李前往機場</small></button>
+        <button class="place" data-id="gimhae"><strong>金海國際機場</strong><small>18:30 抵達｜停留約 2.5 小時：托運、自助退稅、安檢<br>交通：西面站→沙上站，轉機場輕軌至「機場站」</small></button>
+      </div>
+    </section>
+    <section class="map-area" aria-label="地圖">
+      <div class="map-tools">
+        <button id="overview-button" type="button">所有圖釘</button>
+        <button id="google-button" class="active" type="button">Google 地圖定位</button>
+        <a id="open-google" href="https://www.google.com/maps" target="_blank" rel="noopener">另開 Google Maps</a>
+        <span class="selected" id="selected-name">目前顯示釜山地圖</span>
+      </div>
+      <div id="overview" aria-label="行程地點總覽地圖" style="display:none"></div>
+      <iframe id="google-map" title="Google 地圖定位" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=Busan%2C%20South%20Korea&output=embed"></iframe>
+    </section>
+  </main>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const places = {
+      angel:{name:'Hotel Angel（西面）',q:'Hotel Angel Seomyeon Busan',lat:35.1550,lng:129.0585}, lenith:{name:'HOTEL LENITH Seomyeon',q:'HOTEL LENITH Seomyeon Busan',lat:35.1560,lng:129.0607}, seomyeon:{name:'西面站／西面一號街',q:'Seomyeon Station, Busan',lat:35.1579,lng:129.0596}, huinnyeoul:{name:'白淺灘文化村',q:'Huinnyeoul Culture Village, Busan',lat:35.0782,lng:129.0450}, gamcheon:{name:'甘川文化村',q:'Gamcheon Culture Village, Busan',lat:35.0976,lng:129.0107}, lottegwangbok:{name:'樂天百貨光復店',q:'Lotte Department Store Gwangbok, Busan',lat:35.0983,lng:129.0365}, biff:{name:'BIFF 廣場',q:'BIFF Square, Busan',lat:35.0986,lng:129.0263}, gijang:{name:'機張市場',q:'Gijang Market, Busan',lat:35.2440,lng:129.2130}, luge:{name:'Skyline Luge 釜山',q:'Skyline Luge Busan',lat:35.1983,lng:129.2147}, lotteworld:{name:'樂天世界釜山',q:'Lotte World Adventure Busan',lat:35.1968,lng:129.2132}, lottemart:{name:'樂天百貨釜山本店',q:'Lotte Department Store Busan Main, Busan',lat:35.1569,lng:129.0569}, mipo:{name:'尾浦／海雲台藍線公園',q:'Mipo Station Haeundae Blueline Park, Busan',lat:35.1587,lng:129.1711}, cheongsapo:{name:'青沙浦',q:'Cheongsapo Daritdol Observatory, Busan',lat:35.1603,lng:129.1995}, xthesky:{name:'BUSAN X the SKY',q:'BUSAN X the SKY, Busan',lat:35.1598,lng:129.1697}, spaland:{name:'Spa Land Centum City',q:'Spa Land Centum City, Busan',lat:35.1699,lng:129.1298}, songdo:{name:'松島海上纜車',q:'Busan Air Cruise Songdo Cable Car',lat:35.0773,lng:129.0161}, songdobridge:{name:'松島龍宮雲橋',q:'Songdo Yonggung Suspension Bridge, Busan',lat:35.0750,lng:129.0200}, jeonpo:{name:'田浦咖啡街',q:'Jeonpo Cafe Street, Busan',lat:35.1555,lng:129.0669}, gwanganli:{name:'廣安里海灘',q:'Gwangalli Beach, Busan',lat:35.1532,lng:129.1188}, bexco:{name:'BEXCO 釜山會展中心',q:'BEXCO, Busan',lat:35.1686,lng:129.1362}, emart:{name:'E-mart 門峴店',q:'E-Mart Munhyeon, Busan',lat:35.1393,lng:129.0670}, hwangnyeongsan:{name:'荒嶺山烽燧臺',q:'Hwangnyeongsan Beacon Mound, Busan',lat:35.1574,lng:129.1005}, citizenpark:{name:'釜山市民公園',q:'Busan Citizens Park',lat:35.1688,lng:129.0506}, gimhae:{name:'金海國際機場',q:'Gimhae International Airport',lat:35.1795,lng:128.9382}
+    };
+    const map = L.map('overview', {scrollWheelZoom:true}).setView([35.155,129.095], 11);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19,attribution:'© OpenStreetMap contributors'}).addTo(map);
+    const markers = {};
+    const icon = n => L.divIcon({className:'',html:`<div class="pin">${n}</div>`,iconSize:[25,25],iconAnchor:[12,12]});
+    Object.entries(places).forEach(([id,p],i) => { markers[id]=L.marker([p.lat,p.lng],{icon:icon(i+1)}).addTo(map).bindPopup(`<b>${p.name}</b><span>點選左側行程可開啟 Google 地圖定位</span>`); });
+    const overview = document.getElementById('overview'); const frame = document.getElementById('google-map'); const overviewButton = document.getElementById('overview-button'); const googleButton = document.getElementById('google-button'); const selectedName = document.getElementById('selected-name'); const openGoogle = document.getElementById('open-google');
+    function showOverview(){ overview.style.display='block'; frame.style.display='none'; overviewButton.classList.add('active'); googleButton.classList.remove('active'); selectedName.textContent='目前顯示全部行程地點'; setTimeout(()=>map.invalidateSize(),0); }
+    function showGoogle(p){ overview.style.display='none'; frame.style.display='block'; overviewButton.classList.remove('active'); googleButton.classList.add('active'); frame.src='https://www.google.com/maps?q='+encodeURIComponent(p.q)+'&output=embed'; openGoogle.href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.q); selectedName.textContent=p.name; }
+    document.querySelectorAll('.place').forEach(btn => btn.addEventListener('click',()=>{ const id=btn.dataset.id, p=places[id]; document.querySelectorAll('.place').forEach(x=>x.classList.remove('is-active')); btn.classList.add('is-active'); map.setView([p.lat,p.lng],14); markers[id].openPopup(); showGoogle(p); }));
+    overviewButton.addEventListener('click',showOverview); googleButton.addEventListener('click',()=>{ const active=document.querySelector('.place.is-active'); if(active) showGoogle(places[active.dataset.id]); });
+  </script>
+</body>
+</html>
