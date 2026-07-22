@@ -10,6 +10,8 @@
     * { box-sizing:border-box; }
     body { margin:0; color:var(--ink); background:#f6f7f9; font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","Microsoft JhengHei",sans-serif; }
     header { padding:20px 26px 14px; background:var(--surface); border-bottom:1px solid var(--line); }
+    .title-row { align-items:center; display:flex; gap:12px; justify-content:space-between; }
+    .text-file-link { border:1px solid var(--line); border-radius:8px; color:var(--ink); font-size:13px; padding:7px 10px; text-decoration:none; white-space:nowrap; }
     h1 { margin:0 0 6px; font-size:23px; font-weight:700; }
     header p { margin:0; color:var(--muted); font-size:14px; }
     .layout { display:grid; grid-template-columns:minmax(310px, 43%) 1fr; gap:0; min-height:calc(100vh - 92px); }
@@ -37,8 +39,8 @@
 </head>
 <body>
   <header>
-    <h1>釜山 8 天 7 夜｜互動行程地圖</h1>
-    <p>點選左側任一地點，右側會切換至 Google 地圖定位；「所有圖釘」可總覽全部行程地點。</p>
+    <div class="title-row"><h1>釜山 8 天 7 夜｜互動行程地圖</h1><a class="text-file-link" href="busan-itinerary.txt" target="_blank" rel="noopener">開啟行程文字檔</a></div>
+    <p>依序點選左側地點，右側會顯示上一站到目前地點的大眾運輸路線；「所有圖釘」可總覽全部行程地點。</p>
   </header>
   <main class="layout">
     <section class="itinerary" aria-label="行程">
@@ -118,10 +120,10 @@
     const markers = {};
     const icon = n => L.divIcon({className:'',html:`<div class="pin">${n}</div>`,iconSize:[25,25],iconAnchor:[12,12]});
     Object.entries(places).forEach(([id,p],i) => { markers[id]=L.marker([p.lat,p.lng],{icon:icon(i+1)}).addTo(map).bindPopup(`<b>${p.name}</b><span>點選左側行程可開啟 Google 地圖定位</span>`); });
-    const overview = document.getElementById('overview'); const frame = document.getElementById('google-map'); const overviewButton = document.getElementById('overview-button'); const googleButton = document.getElementById('google-button'); const selectedName = document.getElementById('selected-name'); const openGoogle = document.getElementById('open-google');
+    const overview = document.getElementById('overview'); const frame = document.getElementById('google-map'); const overviewButton = document.getElementById('overview-button'); const googleButton = document.getElementById('google-button'); const selectedName = document.getElementById('selected-name'); const openGoogle = document.getElementById('open-google'); let previousPlaceId = null;
     function showOverview(){ overview.style.display='block'; frame.style.display='none'; overviewButton.classList.add('active'); googleButton.classList.remove('active'); selectedName.textContent='目前顯示全部行程地點'; setTimeout(()=>map.invalidateSize(),0); }
-    function showGoogle(p){ overview.style.display='none'; frame.style.display='block'; overviewButton.classList.remove('active'); googleButton.classList.add('active'); frame.src='https://www.google.com/maps?q='+encodeURIComponent(p.q)+'&output=embed'; openGoogle.href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.q); selectedName.textContent=p.name; }
-    document.querySelectorAll('.place').forEach(btn => btn.addEventListener('click',()=>{ const id=btn.dataset.id, p=places[id]; document.querySelectorAll('.place').forEach(x=>x.classList.remove('is-active')); btn.classList.add('is-active'); map.setView([p.lat,p.lng],14); markers[id].openPopup(); showGoogle(p); }));
+    function showGoogle(p, previous){ overview.style.display='none'; frame.style.display='block'; overviewButton.classList.remove('active'); googleButton.classList.add('active'); if(previous){ const route='https://www.google.com/maps?saddr='+previous.lat+','+previous.lng+'&daddr='+p.lat+','+p.lng; frame.src=route+'&output=embed'; openGoogle.href='https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent(previous.q)+'&destination='+encodeURIComponent(p.q)+'&travelmode=transit'; selectedName.textContent=previous.name+' → '+p.name; } else { frame.src='https://www.google.com/maps?q='+encodeURIComponent(p.q)+'&output=embed'; openGoogle.href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.q); selectedName.textContent=p.name; } }
+    document.querySelectorAll('.place').forEach(btn => btn.addEventListener('click',()=>{ const id=btn.dataset.id, p=places[id], previous=previousPlaceId && previousPlaceId!==id ? places[previousPlaceId] : null; document.querySelectorAll('.place').forEach(x=>x.classList.remove('is-active')); btn.classList.add('is-active'); map.setView([p.lat,p.lng],14); markers[id].openPopup(); showGoogle(p,previous); previousPlaceId=id; }));
     overviewButton.addEventListener('click',showOverview); googleButton.addEventListener('click',()=>{ const active=document.querySelector('.place.is-active'); if(active) showGoogle(places[active.dataset.id]); });
   </script>
 </body>
