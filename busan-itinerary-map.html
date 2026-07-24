@@ -29,8 +29,22 @@
     .map-tools button, .map-tools a { border:1px solid var(--line); border-radius:8px; background:var(--surface); color:var(--ink); cursor:pointer; font:inherit; font-size:13px; padding:7px 10px; text-decoration:none; }
     .map-tools button.active { background:var(--accent); border-color:var(--accent); color:#fff; }
     .map-tools .selected { color:var(--muted); font-size:13px; margin-left:auto; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    #overview, #google-map { height:calc(100% - 51px); width:100%; }
+    #geoji-fab { align-items:center; background:#3B1E1E; border-radius:999px; box-shadow:0 6px 18px rgba(0,0,0,.25); color:#fff; display:flex; font-size:14px; font-weight:700; gap:8px; padding:13px 20px; position:fixed; right:18px; bottom:18px; text-decoration:none; z-index:999; transition:.15s ease; }
+    #geoji-fab:hover { transform:translateY(-2px); box-shadow:0 8px 22px rgba(0,0,0,.3); }
+    #geoji-fab .fab-icon { align-items:center; background:#fff; border-radius:50%; color:#3B1E1E; display:flex; flex-shrink:0; font-size:13px; font-weight:900; height:24px; justify-content:center; width:24px; }
+    @media (max-width:640px){ #geoji-fab { bottom:14px; right:14px; padding:12px 16px; font-size:13px; } }
+    #overview, #google-map, #naver-panel, #food-panel { height:calc(100% - 51px); width:100%; }
     #google-map { border:0; }
+    #naver-panel, #food-panel { align-items:center; background:var(--surface); display:flex; flex-direction:column; justify-content:center; overflow:auto; padding:24px; text-align:center; }
+    #naver-panel .naver-icon, #food-panel .naver-icon { align-items:center; background:var(--soft); border-radius:50%; color:var(--accent); display:flex; font-size:26px; font-weight:800; height:56px; justify-content:center; margin-bottom:14px; width:56px; }
+    #naver-panel h3, #food-panel h3 { margin:0 0 6px; font-size:17px; }
+    #naver-panel p.hint, #food-panel p.hint { color:var(--muted); font-size:13px; line-height:1.6; margin:0 0 20px; max-width:360px; }
+    #food-panel .ko-term { background:var(--soft); border-radius:8px; color:var(--ink); font-size:15px; font-weight:700; margin:0 0 16px; padding:8px 14px; }
+    .naver-links { display:flex; flex-direction:column; gap:10px; width:100%; max-width:320px; }
+    .naver-link-btn { border:1px solid var(--line); border-radius:10px; color:var(--ink); display:block; font-size:14px; font-weight:600; padding:12px 14px; text-decoration:none; transition:.16s ease; cursor:pointer; }
+    .naver-link-btn.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+    .naver-link-btn:hover { opacity:.9; }
+    .naver-link-btn small { color:inherit; display:block; font-size:12px; font-weight:400; margin-top:2px; opacity:.85; }
     .pin { align-items:center; background:var(--accent); border:2px solid #fff; border-radius:50%; color:#fff; display:flex; font:700 11px/1 sans-serif; height:25px; justify-content:center; width:25px; }
     .leaflet-popup-content { font-family:inherit; }
     .leaflet-popup-content b { display:block; margin-bottom:3px; }
@@ -39,8 +53,8 @@
 </head>
 <body>
   <header>
-    <div class="title-row"><h1>釜山 8 天 7 夜｜互動行程地圖</h1><a class="text-file-link" href="busan-itinerary.txt" target="_blank" rel="noopener">開啟行程文字檔</a></div>
-    <p>依序點選左側地點，右側會顯示上一站到目前地點的大眾運輸路線；「所有圖釘」可總覽全部行程地點。</p>
+    <div class="title-row"><h1>釜山 8 天 7 夜｜互動行程地圖（修訂版）</h1><a class="text-file-link" href="busan-itinerary-v2.txt" target="_blank" rel="noopener">開啟行程文字檔</a></div>
+    <p>依序點選左側地點，右側會顯示上一站到目前地點的大眾運輸路線；「所有圖釘」可總覽全部行程地點，「Naver 地圖」可切換為 Naver 地圖連結，「Kakao 地圖（精準定位）」會用經緯度直接定位到該地點（保證準確），並附上韓國高 CP 值美食地圖「거지맵」的韓文搜尋詞可供複製使用。已依提醒事項調整 Day 3、5、6、7、8 的時間與備註。</p>
   </header>
   <main class="layout">
     <section class="itinerary" aria-label="行程">
@@ -62,8 +76,8 @@
         <button class="place" data-id="lenith"><strong>HOTEL LENITH Seomyeon｜出發</strong><small>09:15 出發｜前往東海線機張方向<br>最近：西面站 7 號出口，步行約 6 分鐘</small></button>
         <button class="place" data-id="gijang"><strong>機張市場</strong><small>10:30 抵達｜停留約 1.5 小時：螃蟹午餐<br>最近：東海線「機張站」；市場步行約 10 分鐘</small></button>
         <button class="place" data-id="luge"><strong>Skyline Luge 釜山</strong><small>12:30 抵達｜停留約 1.5 小時：PASS 啟用、滑車 2 回<br>最近：東海線「OSIRIA 站」；東釜山觀光園區巴士站</small></button>
-        <button class="place" data-id="lotteworld"><strong>樂天世界釜山</strong><small>14:15 抵達｜停留約 4 小時：遊樂設施、城堡拍照<br>最近：OSIRIA 站／東釜山觀光園區巴士站</small></button>
-        <button class="place" data-id="lottemart"><strong>樂天百貨釜山本店</strong><small>19:30 抵達｜停留約 1 小時：西面補貨<br>最近：西面站 7 號出口，百貨 B2</small></button>
+        <button class="place" data-id="lotteworld"><strong>樂天世界釜山</strong><small>14:15 抵達｜停留約 4 小時：遊樂設施、城堡拍照；18:15 結束後建議直接搭計程車前往西面（大眾運輸轉乘約需 1.5 小時以上，較趕）<br>最近：OSIRIA 站／東釜山觀光園區巴士站</small></button>
+        <button class="place" data-id="lottemart"><strong>樂天百貨釜山本店</strong><small>19:45 抵達｜停留約 45 分鐘：西面補貨<br>最近：西面站 7 號出口，百貨 B2</small></button>
         <button class="place" data-id="lenith"><strong>HOTEL LENITH Seomyeon｜返回住宿</strong><small>21:00 抵達｜休息、整理 PASS 與戰利品</small></button>
       </div>
       <div class="day"><h2>Day 4 <span>11/17（二）海雲台 PASS</span></h2>
@@ -78,53 +92,98 @@
         <button class="place" data-id="lenith"><strong>HOTEL LENITH Seomyeon｜出發</strong><small>09:10 出發｜前往南浦／松島方向</small></button>
         <button class="place" data-id="songdo"><strong>松島海上纜車</strong><small>10:00 抵達｜停留約 2 小時：PASS 水晶車廂往返<br>交通：札嘎其站／南浦站轉公車至「松島纜車」巴士站</small></button>
         <button class="place" data-id="songdobridge"><strong>松島龍宮雲橋</strong><small>12:15 抵達｜停留約 45 分鐘：海景步道<br>交通：纜車松島灣站附近轉接駁／計程車較省時</small></button>
+        <button class="place" data-id="songdo"><strong>南浦／松島周邊｜午餐</strong><small>13:00 開始｜停留約 1.5 小時：建議先選定店家</small></button>
         <button class="place" data-id="jeonpo"><strong>田浦咖啡街</strong><small>15:30 抵達｜停留約 2 小時：咖啡與選物店<br>最近：田浦站 7 號出口，步行約 3 分鐘</small></button>
         <button class="place" data-id="gwanganli"><strong>廣安里海灘</strong><small>18:30 抵達｜停留約 3 小時：晚餐、廣安大橋夜景<br>最近：金蓮山站 1／3 號出口，步行約 10 分鐘</small></button>
         <button class="place" data-id="lenith"><strong>HOTEL LENITH Seomyeon｜返回住宿</strong><small>22:00 抵達｜金蓮山站搭地鐵 2 號線直達西面站</small></button>
       </div>
       <div class="day"><h2>Day 6 <span>11/19（四）G‑STAR</span></h2>
         <button class="place" data-id="lenith"><strong>HOTEL LENITH Seomyeon｜出發</strong><small>07:15 出發｜地鐵 2 號線至 Centum City 站</small></button>
-        <button class="place" data-id="bexco"><strong>BEXCO 釜山會展中心</strong><small>08:00 抵達｜停留約 9 小時：G‑STAR 排隊、入場與參觀<br>最近：Centum City 站 1 號出口約 50 公尺／市立美術館站 7 號出口約 100 公尺</small></button>
+        <button class="place" data-id="bexco"><strong>BEXCO 釜山會展中心</strong><small>08:00 抵達｜停留約 9 小時：G‑STAR 排隊、入場與參觀<br>※務必提前於官網完成線上購票／預約入場時段，過去幾年不開放現場售票<br>最近：Centum City 站 1 號出口約 50 公尺／市立美術館站 7 號出口約 100 公尺</small></button>
         <button class="place" data-id="lenith"><strong>HOTEL LENITH Seomyeon｜返回住宿</strong><small>18:15 抵達｜BEXCO 周邊晚餐後可再彈性調整</small></button>
       </div>
       <div class="day"><h2>Day 7 <span>11/20（五）西面採購與夜景</span></h2>
         <button class="place" data-id="lenith"><strong>HOTEL LENITH Seomyeon｜出發</strong><small>10:30 出發｜西面周邊步行／地鐵移動</small></button>
         <button class="place" data-id="citizenpark"><strong>釜山市民公園</strong><small>11:00 抵達｜停留約 1.5 小時：悠閒散步（彈性）<br>最近：釜田站／楊亭站，步行約 10–15 分鐘</small></button>
         <button class="place" data-id="emart"><strong>E-mart 門峴店</strong><small>14:00 抵達｜停留約 2 小時：伴手禮、泡麵、退稅<br>最近：門峴站 3 號出口，步行約 8 分鐘</small></button>
+        <button class="place" data-id="seomyeon"><strong>西面／富田｜晚餐與自由活動</strong><small>16:00 開始｜停留約 2.5 小時：彈性，建議先想好備案餐廳</small></button>
         <button class="place" data-id="hwangnyeongsan"><strong>荒嶺山烽燧臺</strong><small>19:00 抵達｜停留約 1.5 小時：360° 夜景<br>交通：西面飯店出發建議計程車；山頂無鄰近地鐵站</small></button>
         <button class="place" data-id="lenith"><strong>HOTEL LENITH Seomyeon｜返回住宿</strong><small>21:15 抵達｜荒嶺山下山後搭計程車回飯店</small></button>
       </div>
       <div class="day"><h2>Day 8 <span>11/21（六）返程</span></h2>
         <button class="place" data-id="lenith"><strong>HOTEL LENITH Seomyeon｜出發／退房</strong><small>11:00 退房｜可先寄放行李；17:00 取行李前往機場</small></button>
-        <button class="place" data-id="gimhae"><strong>金海國際機場</strong><small>18:30 抵達｜停留約 2.5 小時：托運、自助退稅、安檢<br>交通：西面站→沙上站，轉機場輕軌至「機場站」</small></button>
+        <button class="place" data-id="gimhae"><strong>金海國際機場</strong><small>17:30 抵達｜停留約 3.5 小時：托運、自助退稅、安檢（含退稅排隊緩衝）<br>交通：西面站→沙上站，轉機場輕軌至「機場站」，16:30 從飯店取行李出發</small></button>
       </div>
     </section>
     <section class="map-area" aria-label="地圖">
       <div class="map-tools">
         <button id="overview-button" type="button">所有圖釘</button>
         <button id="google-button" class="active" type="button">Google 地圖定位</button>
+        <button id="naver-button" type="button">Naver 地圖</button>
+        <button id="food-button" type="button">Kakao 地圖（精準定位）</button>
         <a id="open-google" href="https://www.google.com/maps" target="_blank" rel="noopener">另開 Google Maps</a>
+        <a id="open-naver" href="https://map.naver.com/p" target="_blank" rel="noopener" style="display:none">另開 Naver Map</a>
+        <a id="open-food" href="https://map.kakao.com/" target="_blank" rel="noopener" style="display:none">另開 Kakao 地圖</a>
         <span class="selected" id="selected-name">目前顯示釜山地圖</span>
       </div>
       <div id="overview" aria-label="行程地點總覽地圖" style="display:none"></div>
       <iframe id="google-map" title="Google 地圖定位" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=Busan%2C%20South%20Korea&output=embed"></iframe>
+      <div id="naver-panel" style="display:none"></div>
+      <div id="food-panel" style="display:none"></div>
     </section>
   </main>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
     const places = {
-      angel:{name:'Hotel Angel（西面）',q:'Hotel Angel Seomyeon Busan',lat:35.1550,lng:129.0585}, lenith:{name:'HOTEL LENITH Seomyeon',q:'HOTEL LENITH Seomyeon Busan',lat:35.1560,lng:129.0607}, seomyeon:{name:'西面站／西面一號街',q:'Seomyeon Station, Busan',lat:35.1579,lng:129.0596}, huinnyeoul:{name:'白淺灘文化村',q:'Huinnyeoul Culture Village, Busan',lat:35.0782,lng:129.0450}, gamcheon:{name:'甘川文化村',q:'Gamcheon Culture Village, Busan',lat:35.0976,lng:129.0107}, lottegwangbok:{name:'樂天百貨光復店',q:'Lotte Department Store Gwangbok, Busan',lat:35.0983,lng:129.0365}, biff:{name:'BIFF 廣場',q:'BIFF Square, Busan',lat:35.0986,lng:129.0263}, gijang:{name:'機張市場',q:'Gijang Market, Busan',lat:35.2440,lng:129.2130}, luge:{name:'Skyline Luge 釜山',q:'Skyline Luge Busan',lat:35.1983,lng:129.2147}, lotteworld:{name:'樂天世界釜山',q:'Lotte World Adventure Busan',lat:35.1968,lng:129.2132}, lottemart:{name:'樂天百貨釜山本店',q:'Lotte Department Store Busan Main, Busan',lat:35.1569,lng:129.0569}, mipo:{name:'尾浦／海雲台藍線公園',q:'Mipo Station Haeundae Blueline Park, Busan',lat:35.1587,lng:129.1711}, cheongsapo:{name:'青沙浦',q:'Cheongsapo Daritdol Observatory, Busan',lat:35.1603,lng:129.1995}, xthesky:{name:'BUSAN X the SKY',q:'BUSAN X the SKY, Busan',lat:35.1598,lng:129.1697}, spaland:{name:'Spa Land Centum City',q:'Spa Land Centum City, Busan',lat:35.1699,lng:129.1298}, songdo:{name:'松島海上纜車',q:'Busan Air Cruise Songdo Cable Car',lat:35.0773,lng:129.0161}, songdobridge:{name:'松島龍宮雲橋',q:'Songdo Yonggung Suspension Bridge, Busan',lat:35.0750,lng:129.0200}, jeonpo:{name:'田浦咖啡街',q:'Jeonpo Cafe Street, Busan',lat:35.1555,lng:129.0669}, gwanganli:{name:'廣安里海灘',q:'Gwangalli Beach, Busan',lat:35.1532,lng:129.1188}, bexco:{name:'BEXCO 釜山會展中心',q:'BEXCO, Busan',lat:35.1686,lng:129.1362}, emart:{name:'E-mart 門峴店',q:'E-Mart Munhyeon, Busan',lat:35.1393,lng:129.0670}, hwangnyeongsan:{name:'荒嶺山烽燧臺',q:'Hwangnyeongsan Beacon Mound, Busan',lat:35.1574,lng:129.1005}, citizenpark:{name:'釜山市民公園',q:'Busan Citizens Park',lat:35.1688,lng:129.0506}, gimhae:{name:'金海國際機場',q:'Gimhae International Airport',lat:35.1795,lng:128.9382}
+      angel:{name:'Hotel Angel（西面）',q:'Hotel Angel Seomyeon Busan',qko:'호텔 엔젤 서면',lat:35.1550,lng:129.0585},
+      lenith:{name:'HOTEL LENITH Seomyeon',q:'HOTEL LENITH Seomyeon Busan',qko:'호텔 레니스 서면',lat:35.1560,lng:129.0607},
+      seomyeon:{name:'西面站／西面一號街',q:'Seomyeon Station, Busan',qko:'서면역',lat:35.1579,lng:129.0596},
+      huinnyeoul:{name:'白淺灘文化村',q:'Huinnyeoul Culture Village, Busan',qko:'흰여울문화마을',lat:35.0782,lng:129.0450},
+      gamcheon:{name:'甘川文化村',q:'Gamcheon Culture Village, Busan',qko:'감천문화마을',lat:35.0976,lng:129.0107},
+      lottegwangbok:{name:'樂天百貨光復店',q:'Lotte Department Store Gwangbok, Busan',qko:'롯데백화점 광복점',lat:35.0983,lng:129.0365},
+      biff:{name:'BIFF 廣場',q:'BIFF Square, Busan',qko:'BIFF광장',lat:35.0986,lng:129.0263},
+      gijang:{name:'機張市場',q:'Gijang Market, Busan',qko:'기장시장',lat:35.2440,lng:129.2130},
+      luge:{name:'Skyline Luge 釜山',q:'Skyline Luge Busan',qko:'스카이라인루지 부산',lat:35.1983,lng:129.2147},
+      lotteworld:{name:'樂天世界釜山',q:'Lotte World Adventure Busan',qko:'롯데월드 어드벤처 부산',lat:35.1968,lng:129.2132},
+      lottemart:{name:'樂天百貨釜山本店',q:'Lotte Department Store Busan Main, Busan',qko:'롯데백화점 부산본점',lat:35.1569,lng:129.0569},
+      mipo:{name:'尾浦／海雲台藍線公園',q:'Mipo Station Haeundae Blueline Park, Busan',qko:'미포정거장 해운대 블루라인파크',lat:35.1587,lng:129.1711},
+      cheongsapo:{name:'青沙浦',q:'Cheongsapo Daritdol Observatory, Busan',qko:'청사포 다릿돌전망대',lat:35.1603,lng:129.1995},
+      xthesky:{name:'BUSAN X the SKY',q:'BUSAN X the SKY, Busan',qko:'부산 엑스더스카이',lat:35.1598,lng:129.1697},
+      spaland:{name:'Spa Land Centum City',q:'Spa Land Centum City, Busan',qko:'스파랜드 센텀시티',lat:35.1699,lng:129.1298},
+      songdo:{name:'松島海上纜車',q:'Busan Air Cruise Songdo Cable Car',qko:'송도해상케이블카',lat:35.0773,lng:129.0161},
+      songdobridge:{name:'松島龍宮雲橋',q:'Songdo Yonggung Suspension Bridge, Busan',qko:'송도용궁구름다리',lat:35.0750,lng:129.0200},
+      jeonpo:{name:'田浦咖啡街',q:'Jeonpo Cafe Street, Busan',qko:'전포카페거리',lat:35.1555,lng:129.0669},
+      gwanganli:{name:'廣安里海灘',q:'Gwangalli Beach, Busan',qko:'광안리해수욕장',lat:35.1532,lng:129.1188},
+      bexco:{name:'BEXCO 釜山會展中心',q:'BEXCO, Busan',qko:'벡스코',lat:35.1686,lng:129.1362},
+      emart:{name:'E-mart 門峴店',q:'E-Mart Munhyeon, Busan',qko:'이마트 문현점',lat:35.1393,lng:129.0670},
+      hwangnyeongsan:{name:'荒嶺山烽燧臺',q:'Hwangnyeongsan Beacon Mound, Busan',qko:'황령산 봉수대',lat:35.1574,lng:129.1005},
+      citizenpark:{name:'釜山市民公園',q:'Busan Citizens Park',qko:'부산시민공원',lat:35.1688,lng:129.0506},
+      gimhae:{name:'金海國際機場',q:'Gimhae International Airport',qko:'김해국제공항',lat:35.1795,lng:128.9382}
     };
     const map = L.map('overview', {scrollWheelZoom:true}).setView([35.155,129.095], 11);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19,attribution:'© OpenStreetMap contributors'}).addTo(map);
     const markers = {};
     const icon = n => L.divIcon({className:'',html:`<div class="pin">${n}</div>`,iconSize:[25,25],iconAnchor:[12,12]});
     Object.entries(places).forEach(([id,p],i) => { markers[id]=L.marker([p.lat,p.lng],{icon:icon(i+1)}).addTo(map).bindPopup(`<b>${p.name}</b><span>點選左側行程可開啟 Google 地圖定位</span>`); });
-    const overview = document.getElementById('overview'); const frame = document.getElementById('google-map'); const overviewButton = document.getElementById('overview-button'); const googleButton = document.getElementById('google-button'); const selectedName = document.getElementById('selected-name'); const openGoogle = document.getElementById('open-google'); let previousPlaceId = null;
-    function showOverview(){ overview.style.display='block'; frame.style.display='none'; overviewButton.classList.add('active'); googleButton.classList.remove('active'); selectedName.textContent='目前顯示全部行程地點'; setTimeout(()=>map.invalidateSize(),0); }
-    function showGoogle(p, previous){ overview.style.display='none'; frame.style.display='block'; overviewButton.classList.remove('active'); googleButton.classList.add('active'); if(previous){ const route='https://www.google.com/maps?saddr='+previous.lat+','+previous.lng+'&daddr='+p.lat+','+p.lng; frame.src=route+'&output=embed'; openGoogle.href='https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent(previous.q)+'&destination='+encodeURIComponent(p.q)+'&travelmode=transit'; selectedName.textContent=previous.name+' → '+p.name; } else { frame.src='https://www.google.com/maps?q='+encodeURIComponent(p.q)+'&output=embed'; openGoogle.href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.q); selectedName.textContent=p.name; } }
-    document.querySelectorAll('.place').forEach(btn => btn.addEventListener('click',()=>{ const id=btn.dataset.id, p=places[id], previous=previousPlaceId && previousPlaceId!==id ? places[previousPlaceId] : null; document.querySelectorAll('.place').forEach(x=>x.classList.remove('is-active')); btn.classList.add('is-active'); map.setView([p.lat,p.lng],14); markers[id].openPopup(); showGoogle(p,previous); previousPlaceId=id; }));
-    overviewButton.addEventListener('click',showOverview); googleButton.addEventListener('click',()=>{ const active=document.querySelector('.place.is-active'); if(active) showGoogle(places[active.dataset.id]); });
+    const overview = document.getElementById('overview'); const frame = document.getElementById('google-map'); const naverPanel = document.getElementById('naver-panel'); const foodPanel = document.getElementById('food-panel'); const overviewButton = document.getElementById('overview-button'); const googleButton = document.getElementById('google-button'); const naverButton = document.getElementById('naver-button'); const foodButton = document.getElementById('food-button'); const selectedName = document.getElementById('selected-name'); const openGoogle = document.getElementById('open-google'); const openNaver = document.getElementById('open-naver'); const openFood = document.getElementById('open-food'); let previousPlaceId = null; let currentMode = 'google';
+    function setActiveButton(mode){ overviewButton.classList.toggle('active', mode==='overview'); googleButton.classList.toggle('active', mode==='google'); naverButton.classList.toggle('active', mode==='naver'); foodButton.classList.toggle('active', mode==='food'); openGoogle.style.display = (mode==='naver'||mode==='food') ? 'none' : ''; openNaver.style.display = mode==='naver' ? '' : 'none'; openFood.style.display = mode==='food' ? '' : 'none'; currentMode = mode; }
+    function showOverview(){ overview.style.display='block'; frame.style.display='none'; naverPanel.style.display='none'; foodPanel.style.display='none'; setActiveButton('overview'); selectedName.textContent='目前顯示全部行程地點'; setTimeout(()=>map.invalidateSize(),0); }
+    function showGoogle(p, previous){ overview.style.display='none'; frame.style.display='block'; naverPanel.style.display='none'; foodPanel.style.display='none'; setActiveButton('google'); if(previous){ const route='https://www.google.com/maps?saddr='+previous.lat+','+previous.lng+'&daddr='+p.lat+','+p.lng; frame.src=route+'&output=embed'; openGoogle.href='https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent(previous.q)+'&destination='+encodeURIComponent(p.q)+'&travelmode=transit'; selectedName.textContent=previous.name+' → '+p.name; } else { frame.src='https://www.google.com/maps?q='+encodeURIComponent(p.q)+'&output=embed'; openGoogle.href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.q); selectedName.textContent=p.name; } }
+    function naverSearchUrl(p){ return 'https://map.naver.com/p/search/'+encodeURIComponent(p.qko || p.q); }
+    function naverAppRouteUrl(previous, p){ return 'nmap://route/public?slat='+previous.lat+'&slng='+previous.lng+'&sname='+encodeURIComponent(previous.qko || previous.q)+'&dlat='+p.lat+'&dlng='+p.lng+'&dname='+encodeURIComponent(p.qko || p.q)+'&appname=busan.itinerary.map'; }
+    function showNaver(p, previous){ overview.style.display='none'; frame.style.display='none'; foodPanel.style.display='none'; naverPanel.style.display='flex'; setActiveButton('naver'); const destUrl = naverSearchUrl(p); openNaver.href = destUrl; if(previous){ selectedName.textContent = previous.name+' → '+p.name; const routeUrl = naverAppRouteUrl(previous, p); naverPanel.innerHTML = '<div class="naver-icon">N</div><h3>'+previous.name+' → '+p.name+'</h3><p class="hint">Naver 地圖不支援嵌入預覽，請用下方連結在新分頁開啟（已自動代入韓文地點名稱，搜尋更準確）。手機若已安裝 Naver Map App，可直接開啟 App 內路線導航。</p><div class="naver-links"><a class="naver-link-btn primary" href="'+destUrl+'" target="_blank" rel="noopener">在 Naver 地圖開啟「'+p.name+'」<small>網頁版地點搜尋（'+(p.qko||p.q)+'）</small></a><a class="naver-link-btn" href="'+routeUrl+'">開啟 Naver Map App 路線導航<small>需手機已安裝 Naver Map App</small></a></div>'; } else { selectedName.textContent = p.name; naverPanel.innerHTML = '<div class="naver-icon">N</div><h3>'+p.name+'</h3><p class="hint">Naver 地圖不支援嵌入預覽，請用下方連結在新分頁開啟查看地點（已自動代入韓文地點名稱，搜尋更準確）。</p><div class="naver-links"><a class="naver-link-btn primary" href="'+destUrl+'" target="_blank" rel="noopener">在 Naver 地圖開啟「'+p.name+'」<small>網頁版地點搜尋（'+(p.qko||p.q)+'）</small></a></div>'; } }
+    const GEOJI_URL = 'https://xn--v69ak0xskm.com/map';
+    function kakaoMapUrl(p){ const koTerm = p.qko || p.q; return 'https://map.kakao.com/link/map/'+encodeURIComponent(koTerm)+','+p.lat+','+p.lng; }
+    function showFood(p){ overview.style.display='none'; frame.style.display='none'; naverPanel.style.display='none'; foodPanel.style.display='flex'; setActiveButton('food'); selectedName.textContent=p.name+'｜Kakao 地圖精準定位'; const koTerm = p.qko || p.q; const kakaoUrl = kakaoMapUrl(p); openFood.href = kakaoUrl; foodPanel.innerHTML = '<div class="naver-icon">K</div><h3>'+p.name+'</h3><p class="hint">這裡直接用地點的經緯度定位，保證跳到正確位置（不需要搜尋、不會找錯地方）。Kakao 地圖是韓國最主流的地圖之一，開啟後可以直接在地圖上看到周邊餐廳、評分與菜單照片。</p><div class="naver-links"><a class="naver-link-btn primary" href="'+kakaoUrl+'" target="_blank" rel="noopener">在 Kakao 地圖精準開啟「'+p.name+'」<small>直接定位經緯度，100% 準確</small></a></div><p class="hint" style="margin:18px 0 10px">如果想找韓國網友整理的極致高 CP 值小吃，也可以到 <b style="color:var(--ink)">거지맵</b> 手動搜尋（該站不支援座標定位，需自行貼上搜尋詞）：</p><div class="ko-term" id="ko-term-text">'+koTerm+'</div><div class="naver-links"><button type="button" class="naver-link-btn" id="copy-ko-btn">複製韓文搜尋詞「'+koTerm+'」</button><a class="naver-link-btn" href="'+GEOJI_URL+'" target="_blank" rel="noopener">另開 거지맵<small>開啟後貼上剛複製的韓文搜尋</small></a></div>'; const copyBtn = document.getElementById('copy-ko-btn'); copyBtn.addEventListener('click', ()=>{ navigator.clipboard.writeText(koTerm).then(()=>{ copyBtn.textContent='已複製！「'+koTerm+'」'; setTimeout(()=>{ copyBtn.textContent='複製韓文搜尋詞「'+koTerm+'」'; },2000); }).catch(()=>{ copyBtn.textContent='複製失敗，請手動選取上方文字'; }); }); }
+    document.querySelectorAll('.place').forEach(btn => btn.addEventListener('click',()=>{ const id=btn.dataset.id, p=places[id], previous=previousPlaceId && previousPlaceId!==id ? places[previousPlaceId] : null; document.querySelectorAll('.place').forEach(x=>x.classList.remove('is-active')); btn.classList.add('is-active'); map.setView([p.lat,p.lng],14); markers[id].openPopup(); if(currentMode==='naver'){ showNaver(p,previous); } else if(currentMode==='food'){ showFood(p); } else { showGoogle(p,previous); } previousPlaceId=id; }));
+    overviewButton.addEventListener('click',showOverview);
+    googleButton.addEventListener('click',()=>{ const active=document.querySelector('.place.is-active'); if(active){ showGoogle(places[active.dataset.id]); } else { showGoogle(places[Object.keys(places)[0]]); } });
+    naverButton.addEventListener('click',()=>{ const active=document.querySelector('.place.is-active'); if(active){ showNaver(places[active.dataset.id]); } else { showNaver(places[Object.keys(places)[0]]); } });
+    foodButton.addEventListener('click',()=>{ const active=document.querySelector('.place.is-active'); if(active){ showFood(places[active.dataset.id]); } else { showFood(places[Object.keys(places)[0]]); } });
   </script>
+  <a id="geoji-fab" href="https://xn--v69ak0xskm.com/map" target="_blank" rel="noopener" title="開啟 거지맵，可用手機目前位置搜尋附近美食">
+    <span class="fab-icon">GJ</span>
+    <span>거지맵（附近美食）</span>
+  </a>
 </body>
 </html>
