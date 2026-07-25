@@ -12,11 +12,12 @@
     body { margin:0; color:var(--ink); background:#f6f7f9; font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","Microsoft JhengHei",sans-serif; }
     header { padding:20px 26px 14px; background:var(--surface); border-bottom:1px solid var(--line); }
     .title-row { align-items:center; display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; }
-    .text-file-link { border:1px solid var(--line); border-radius:8px; color:var(--ink); font-size:13px; padding:7px 10px; text-decoration:none; white-space:nowrap; }
+    .text-file-link { border:1px solid var(--line); border-radius:8px; color:var(--ink); cursor:pointer; font:inherit; font-size:13px; padding:7px 10px; text-decoration:none; white-space:nowrap; }
+    .header-actions { align-items:center; display:flex; flex-wrap:wrap; gap:8px; }
     h1 { margin:0 0 6px; font-size:23px; font-weight:700; }
     header p { margin:0; color:var(--muted); font-size:14px; }
-    .layout { display:grid; grid-template-columns:minmax(310px, 43%) 1fr; gap:0; min-height:calc(100vh - 92px); }
-    .itinerary { padding:18px; overflow:auto; background:var(--surface); border-right:1px solid var(--line); }
+    .layout { display:grid; grid-template-columns:minmax(310px, 43%) 1fr; gap:0; height:calc(100vh - 92px); }
+    .itinerary { height:100%; overflow-y:auto; padding:18px; background:var(--surface); border-right:1px solid var(--line); }
     .day { margin:0 0 18px; }
     .day h2 { margin:0 0 8px; font-size:16px; font-weight:700; }
     .day h2 span { color:var(--muted); font-size:13px; font-weight:500; }
@@ -25,16 +26,20 @@
     .place.is-active { border-color:var(--accent); box-shadow:0 0 0 2px rgba(213,63,70,.14); background:var(--soft); }
     .place strong { display:block; font-size:14px; }
     .place small { display:block; margin-top:3px; color:var(--muted); font-size:12px; line-height:1.4; }
-    .map-area { position:sticky; top:0; height:calc(100vh - 92px); }
-    .map-tools { align-items:center; background:var(--surface); border-bottom:1px solid var(--line); display:flex; flex-wrap:wrap; gap:8px; padding:10px 14px; }
+    .map-area { position:sticky; top:0; height:calc(100vh - 92px); display:flex; flex-direction:column; }
+    .map-tools { align-items:center; background:var(--surface); border-bottom:1px solid var(--line); display:flex; flex:0 0 auto; flex-wrap:wrap; gap:8px; padding:10px 14px; }
     .map-tools button, .map-tools a { border:1px solid var(--line); border-radius:8px; background:var(--surface); color:var(--ink); cursor:pointer; font:inherit; font-size:13px; padding:7px 10px; text-decoration:none; white-space:nowrap; }
     .map-tools button.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+    #life-button.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+    #life-categories { align-items:center; background:var(--soft); border-bottom:1px solid var(--line); display:flex; flex:0 0 auto; flex-wrap:wrap; gap:6px; padding:8px 14px; }
+    #life-categories .life-cat { border:1px solid var(--line); border-radius:999px; background:#fff; color:var(--ink); cursor:pointer; font:inherit; font-size:12.5px; padding:6px 12px; white-space:nowrap; }
+    #life-categories .life-cat.active { background:var(--accent); border-color:var(--accent); color:#fff; }
     .map-tools .selected { color:var(--muted); flex:1 1 100%; font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     #geoji-fab { align-items:center; background:#3B1E1E; border-radius:999px; box-shadow:0 6px 18px rgba(0,0,0,.25); color:#fff; display:flex; font-size:14px; font-weight:700; gap:8px; padding:13px 20px; position:fixed; right:18px; bottom:18px; text-decoration:none; z-index:999; transition:.15s ease; }
     #geoji-fab:hover { transform:translateY(-2px); box-shadow:0 8px 22px rgba(0,0,0,.3); }
     #geoji-fab .fab-icon { align-items:center; background:#fff; border-radius:50%; color:#3B1E1E; display:flex; flex-shrink:0; font-size:13px; font-weight:900; height:24px; justify-content:center; width:24px; }
     @media (max-width:640px){ #geoji-fab { bottom:14px; right:14px; padding:12px 16px; font-size:13px; } }
-    #overview, #google-map, #naver-panel, #food-panel { height:calc(100% - 51px); width:100%; }
+    #overview, #google-map, #naver-panel, #food-panel { flex:1 1 auto; min-height:0; width:100%; }
     #google-map { border:0; }
     #naver-panel, #food-panel { align-items:center; background:var(--surface); display:flex; flex-direction:column; justify-content:center; overflow:auto; padding:24px; text-align:center; }
     #naver-panel .naver-icon, #food-panel .naver-icon { align-items:center; background:var(--soft); border-radius:50%; color:var(--accent); display:flex; font-size:26px; font-weight:800; height:56px; justify-content:center; margin-bottom:14px; width:56px; }
@@ -55,8 +60,8 @@
       h1 { font-size:18px; }
       header p { font-size:12.5px; }
       .layout { grid-template-columns:1fr; }
-      .itinerary { border-right:0; border-bottom:1px solid var(--line); max-height:47vh; padding:12px; }
-      .map-area { height:53vh; }
+      .itinerary { border-right:0; border-bottom:1px solid var(--line); height:30vh; max-height:30vh; padding:12px; }
+      .map-area { height:60vh; }
       .map-tools { padding:8px 10px; gap:6px; }
       .map-tools button, .map-tools a { font-size:12px; padding:6px 8px; }
       #geoji-fab span:last-child { display:none; }
@@ -66,7 +71,7 @@
 </head>
 <body>
   <header>
-    <div class="title-row"><h1>釜山 8 天 7 夜｜互動行程地圖（修訂版）</h1><a class="text-file-link" href="busan-itinerary-v2.txt" target="_blank" rel="noopener">開啟行程文字檔</a></div>
+    <div class="title-row"><h1>釜山 8 天 7 夜｜互動行程地圖（修訂版）</h1><span class="header-actions"><a class="text-file-link" href="busan-itinerary-v2.txt" target="_blank" rel="noopener">開啟行程文字檔</a><button id="life-button" class="text-file-link" type="button">附近生活機能（2km）</button></span></div>
   </header>
   <main class="layout">
     <section class="itinerary" aria-label="行程">
@@ -136,7 +141,15 @@
         <a id="open-google" href="https://www.google.com/maps" target="_blank" rel="noopener">另開 Google Maps</a>
         <a id="open-naver" href="https://map.naver.com/p" target="_blank" rel="noopener" style="display:none">另開 Naver Map</a>
         <a id="open-food" href="https://map.kakao.com/" target="_blank" rel="noopener" style="display:none">另開 Kakao 地圖</a>
+        <a id="open-life" href="https://www.google.com/maps" target="_blank" rel="noopener" style="display:none">另開 Google 搜尋結果</a>
         <span class="selected" id="selected-name">目前顯示釜山地圖</span>
+      </div>
+      <div id="life-categories" style="display:none">
+        <button type="button" class="life-cat active" data-cat="restaurant">🍚 餐廳</button>
+        <button type="button" class="life-cat" data-cat="snack">🥟 小吃</button>
+        <button type="button" class="life-cat" data-cat="market">🛒 超市</button>
+        <button type="button" class="life-cat" data-cat="cvs">🏪 便利商店</button>
+        <button type="button" class="life-cat" data-cat="mall">🏬 商場</button>
       </div>
       <div id="overview" aria-label="行程地點總覽地圖" style="display:none"></div>
       <iframe id="google-map" title="Google 地圖定位" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=Busan%2C%20South%20Korea&output=embed"></iframe>
@@ -177,21 +190,34 @@
     const markers = {};
     const icon = n => L.divIcon({className:'',html:`<div class="pin">${n}</div>`,iconSize:[25,25],iconAnchor:[12,12]});
     Object.entries(places).forEach(([id,p],i) => { markers[id]=L.marker([p.lat,p.lng],{icon:icon(i+1)}).addTo(map).bindPopup(`<b>${p.name}</b><span>點選左側行程可開啟 Google 地圖定位</span>`); });
-    const overview = document.getElementById('overview'); const frame = document.getElementById('google-map'); const naverPanel = document.getElementById('naver-panel'); const foodPanel = document.getElementById('food-panel'); const overviewButton = document.getElementById('overview-button'); const googleButton = document.getElementById('google-button'); const naverButton = document.getElementById('naver-button'); const foodButton = document.getElementById('food-button'); const selectedName = document.getElementById('selected-name'); const openGoogle = document.getElementById('open-google'); const openNaver = document.getElementById('open-naver'); const openFood = document.getElementById('open-food'); let previousPlaceId = null; let currentMode = 'google';
-    function setActiveButton(mode){ overviewButton.classList.toggle('active', mode==='overview'); googleButton.classList.toggle('active', mode==='google'); naverButton.classList.toggle('active', mode==='naver'); foodButton.classList.toggle('active', mode==='food'); openGoogle.style.display = (mode==='naver'||mode==='food') ? 'none' : ''; openNaver.style.display = mode==='naver' ? '' : 'none'; openFood.style.display = mode==='food' ? '' : 'none'; currentMode = mode; }
+    const overview = document.getElementById('overview'); const frame = document.getElementById('google-map'); const naverPanel = document.getElementById('naver-panel'); const foodPanel = document.getElementById('food-panel'); const overviewButton = document.getElementById('overview-button'); const googleButton = document.getElementById('google-button'); const naverButton = document.getElementById('naver-button'); const foodButton = document.getElementById('food-button'); const lifeButton = document.getElementById('life-button'); const lifeCategories = document.getElementById('life-categories'); const selectedName = document.getElementById('selected-name'); const openGoogle = document.getElementById('open-google'); const openNaver = document.getElementById('open-naver'); const openFood = document.getElementById('open-food'); const openLife = document.getElementById('open-life'); let previousPlaceId = null; let currentMode = 'google'; let lifePlaceId = null; let currentLifeCat = 'restaurant';
+    function setActiveButton(mode){ overviewButton.classList.toggle('active', mode==='overview'); googleButton.classList.toggle('active', mode==='google'); naverButton.classList.toggle('active', mode==='naver'); foodButton.classList.toggle('active', mode==='food'); lifeButton.classList.toggle('active', mode==='life'); openGoogle.style.display = (mode==='naver'||mode==='food'||mode==='life') ? 'none' : ''; openNaver.style.display = mode==='naver' ? '' : 'none'; openFood.style.display = mode==='food' ? '' : 'none'; openLife.style.display = mode==='life' ? '' : 'none'; lifeCategories.style.display = mode==='life' ? 'flex' : 'none'; currentMode = mode; }
     function showOverview(){ overview.style.display='block'; frame.style.display='none'; naverPanel.style.display='none'; foodPanel.style.display='none'; setActiveButton('overview'); selectedName.textContent='目前顯示全部行程地點'; setTimeout(()=>map.invalidateSize(),0); }
-    function showGoogle(p, previous){ overview.style.display='none'; frame.style.display='block'; naverPanel.style.display='none'; foodPanel.style.display='none'; setActiveButton('google'); if(previous){ const route='https://www.google.com/maps?saddr='+previous.lat+','+previous.lng+'&daddr='+p.lat+','+p.lng; frame.src=route+'&output=embed'; openGoogle.href='https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent(previous.q)+'&destination='+encodeURIComponent(p.q)+'&travelmode=transit'; selectedName.textContent=previous.name+' → '+p.name; } else { frame.src='https://www.google.com/maps?q='+encodeURIComponent(p.q)+'&output=embed'; openGoogle.href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.q); selectedName.textContent=p.name; } }
+    function showGoogle(p, previous){ overview.style.display='none'; frame.style.display='block'; naverPanel.style.display='none'; foodPanel.style.display='none'; setActiveButton('google'); if(previous){ const route='https://www.google.com/maps?saddr='+encodeURIComponent(previous.q)+'&daddr='+encodeURIComponent(p.q); frame.src=route+'&output=embed'; openGoogle.href='https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent(previous.q)+'&destination='+encodeURIComponent(p.q)+'&travelmode=transit'; selectedName.textContent=previous.name+' → '+p.name; } else { frame.src='https://www.google.com/maps?q='+encodeURIComponent(p.q)+'&output=embed'; openGoogle.href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.q); selectedName.textContent=p.name; } }
     function naverSearchUrl(p){ return 'https://map.naver.com/p/search/'+encodeURIComponent(p.qko || p.q); }
     function naverAppRouteUrl(previous, p){ return 'nmap://route/public?slat='+previous.lat+'&slng='+previous.lng+'&sname='+encodeURIComponent(previous.qko || previous.q)+'&dlat='+p.lat+'&dlng='+p.lng+'&dname='+encodeURIComponent(p.qko || p.q)+'&appname=busan.itinerary.map'; }
     function showNaver(p, previous){ overview.style.display='none'; frame.style.display='none'; foodPanel.style.display='none'; naverPanel.style.display='flex'; setActiveButton('naver'); const destUrl = naverSearchUrl(p); openNaver.href = destUrl; if(previous){ selectedName.textContent = previous.name+' → '+p.name; const routeUrl = naverAppRouteUrl(previous, p); naverPanel.innerHTML = '<div class="naver-icon">N</div><h3>'+previous.name+' → '+p.name+'</h3><p class="hint">Naver 地圖不支援嵌入預覽，請用下方連結在新分頁開啟（已自動代入韓文地點名稱，搜尋更準確）。手機若已安裝 Naver Map App，可直接開啟 App 內路線導航。</p><div class="naver-links"><a class="naver-link-btn primary" href="'+destUrl+'" target="_blank" rel="noopener">在 Naver 地圖開啟「'+p.name+'」<small>網頁版地點搜尋（'+(p.qko||p.q)+'）</small></a><a class="naver-link-btn" href="'+routeUrl+'">開啟 Naver Map App 路線導航<small>需手機已安裝 Naver Map App</small></a></div>'; } else { selectedName.textContent = p.name; naverPanel.innerHTML = '<div class="naver-icon">N</div><h3>'+p.name+'</h3><p class="hint">Naver 地圖不支援嵌入預覽，請用下方連結在新分頁開啟查看地點（已自動代入韓文地點名稱，搜尋更準確）。</p><div class="naver-links"><a class="naver-link-btn primary" href="'+destUrl+'" target="_blank" rel="noopener">在 Naver 地圖開啟「'+p.name+'」<small>網頁版地點搜尋（'+(p.qko||p.q)+'）</small></a></div>'; } }
     const GEOJI_URL = 'https://xn--v69ak0xskm.com/map';
     function kakaoMapUrl(p){ const koTerm = p.qko || p.q; return 'https://map.kakao.com/link/map/'+encodeURIComponent(koTerm)+','+p.lat+','+p.lng; }
     function showFood(p){ overview.style.display='none'; frame.style.display='none'; naverPanel.style.display='none'; foodPanel.style.display='flex'; setActiveButton('food'); selectedName.textContent=p.name+'｜Kakao 地圖精準定位'; const koTerm = p.qko || p.q; const kakaoUrl = kakaoMapUrl(p); openFood.href = kakaoUrl; foodPanel.innerHTML = '<div class="naver-icon">K</div><h3>'+p.name+'</h3><p class="hint">這裡直接用地點的經緯度定位，保證跳到正確位置（不需要搜尋、不會找錯地方）。Kakao 地圖是韓國最主流的地圖之一，開啟後可以直接在地圖上看到周邊餐廳、評分與菜單照片。</p><div class="naver-links"><a class="naver-link-btn primary" href="'+kakaoUrl+'" target="_blank" rel="noopener">在 Kakao 地圖精準開啟「'+p.name+'」<small>直接定位經緯度，100% 準確</small></a></div><p class="hint" style="margin:18px 0 10px">如果想找韓國網友整理的極致高 CP 值小吃，也可以到 <b style="color:var(--ink)">거지맵</b> 手動搜尋（該站不支援座標定位，需自行貼上搜尋詞）：</p><div class="ko-term" id="ko-term-text">'+koTerm+'</div><div class="naver-links"><button type="button" class="naver-link-btn" id="copy-ko-btn">複製韓文搜尋詞「'+koTerm+'」</button><a class="naver-link-btn" href="'+GEOJI_URL+'" target="_blank" rel="noopener">另開 거지맵<small>開啟後貼上剛複製的韓文搜尋</small></a></div>'; const copyBtn = document.getElementById('copy-ko-btn'); copyBtn.addEventListener('click', ()=>{ navigator.clipboard.writeText(koTerm).then(()=>{ copyBtn.textContent='已複製！「'+koTerm+'」'; setTimeout(()=>{ copyBtn.textContent='複製韓文搜尋詞「'+koTerm+'」'; },2000); }).catch(()=>{ copyBtn.textContent='複製失敗，請手動選取上方文字'; }); }); }
-    document.querySelectorAll('.place').forEach(btn => btn.addEventListener('click',()=>{ const id=btn.dataset.id, p=places[id], previous=previousPlaceId && previousPlaceId!==id ? places[previousPlaceId] : null; document.querySelectorAll('.place').forEach(x=>x.classList.remove('is-active')); btn.classList.add('is-active'); map.setView([p.lat,p.lng],14); markers[id].openPopup(); if(currentMode==='naver'){ showNaver(p,previous); } else if(currentMode==='food'){ showFood(p); } else { showGoogle(p,previous); } previousPlaceId=id; }));
+    const LIFE_CATEGORIES = {
+      restaurant:{ label:'餐廳', term:'음식점' },
+      snack:{ label:'小吃', term:'분식' },
+      market:{ label:'超市', term:'마트' },
+      cvs:{ label:'便利商店', term:'편의점' },
+      mall:{ label:'商場', term:'쇼핑몰' }
+    };
+    const LIFE_ZOOM = 15;
+    function lifeEmbedUrl(p, term){ return 'https://www.google.com/maps?q='+encodeURIComponent(term)+'&ll='+p.lat+','+p.lng+'&z='+LIFE_ZOOM+'&output=embed'; }
+    function lifeOpenUrl(p, term){ return 'https://www.google.com/maps/search/'+encodeURIComponent(term)+'/@'+p.lat+','+p.lng+','+LIFE_ZOOM+'z'; }
+    function showLife(p, catId){ overview.style.display='none'; naverPanel.style.display='none'; foodPanel.style.display='none'; frame.style.display='block'; setActiveButton('life'); lifePlaceId = Object.keys(places).find(k=>places[k]===p) || lifePlaceId; currentLifeCat = catId || currentLifeCat; const cat = LIFE_CATEGORIES[currentLifeCat] || LIFE_CATEGORIES.restaurant; frame.src = lifeEmbedUrl(p, cat.term); openLife.href = lifeOpenUrl(p, cat.term); selectedName.textContent = p.name+' 附近約 2km｜'+cat.label; document.querySelectorAll('#life-categories .life-cat').forEach(b=>b.classList.toggle('active', b.dataset.cat===currentLifeCat)); }
+    document.querySelectorAll('#life-categories .life-cat').forEach(btn => btn.addEventListener('click', ()=>{ const p = lifePlaceId ? places[lifePlaceId] : (document.querySelector('.place.is-active') ? places[document.querySelector('.place.is-active').dataset.id] : places[Object.keys(places)[0]]); showLife(p, btn.dataset.cat); }));
+    document.querySelectorAll('.place').forEach(btn => btn.addEventListener('click',()=>{ const id=btn.dataset.id, p=places[id], previous=previousPlaceId && previousPlaceId!==id ? places[previousPlaceId] : null; document.querySelectorAll('.place').forEach(x=>x.classList.remove('is-active')); btn.classList.add('is-active'); map.setView([p.lat,p.lng],14); markers[id].openPopup(); if(currentMode==='naver'){ showNaver(p,previous); } else if(currentMode==='food'){ showFood(p); } else if(currentMode==='life'){ showLife(p, currentLifeCat); } else { showGoogle(p,previous); } previousPlaceId=id; }));
     overviewButton.addEventListener('click',showOverview);
     googleButton.addEventListener('click',()=>{ const active=document.querySelector('.place.is-active'); if(active){ showGoogle(places[active.dataset.id]); } else { showGoogle(places[Object.keys(places)[0]]); } });
     naverButton.addEventListener('click',()=>{ const active=document.querySelector('.place.is-active'); if(active){ showNaver(places[active.dataset.id]); } else { showNaver(places[Object.keys(places)[0]]); } });
     foodButton.addEventListener('click',()=>{ const active=document.querySelector('.place.is-active'); if(active){ showFood(places[active.dataset.id]); } else { showFood(places[Object.keys(places)[0]]); } });
+    lifeButton.addEventListener('click',()=>{ const active=document.querySelector('.place.is-active'); const p = active ? places[active.dataset.id] : places[Object.keys(places)[0]]; showLife(p, currentLifeCat); });
   </script>
   <a id="geoji-fab" href="https://xn--v69ak0xskm.com/map" target="_blank" rel="noopener" title="開啟 거지맵，可用手機目前位置搜尋附近美食">
     <span class="fab-icon">GJ</span>
