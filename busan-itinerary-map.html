@@ -156,7 +156,12 @@
       emart:{name:'E-mart 門峴店',q:'E-Mart Munhyeon, Busan',qko:'이마트 문현점',lat:35.1393,lng:129.0670},
       hwangnyeongsan:{name:'荒嶺山烽燧臺',q:'Hwangnyeongsan Beacon Mound, Busan',qko:'황령산 봉수대',lat:35.1574,lng:129.1005},
       citizenpark:{name:'釜山市民公園',q:'Busan Citizens Park',qko:'부산시민공원',lat:35.1688,lng:129.0506},
-      gimhae:{name:'金海國際機場',q:'Gimhae International Airport',qko:'김해국제공항',lat:35.1795,lng:128.9382}
+      gimhae:{name:'金海國際機場',q:'Gimhae International Airport',qko:'김해국제공항',lat:35.1795,lng:128.9382},
+      gimhaelrt:{name:'金海輕軌站（공항역）',q:'Gimhae Light Rail Airport Station Busan',qko:'경전철 공항역',lat:35.1765,lng:128.9384},
+      sasang:{name:'沙上站',q:'Sasang Station Busan',qko:'사상역',lat:35.1524,lng:128.9908},
+      jungang:{name:'地鐵中央站',q:'Jungang Station Busan',qko:'중앙역',lat:35.1008,lng:129.0198},
+      bupyeongmarket:{name:'富平罐頭市場',q:'Bupyeong Kkangtong Market Busan',qko:'부평깡통시장',lat:35.1001,lng:129.0288},
+      seogugu:{name:'西區廳站',q:'Seogu-gu Office Station Busan',qko:'서구청',lat:35.0968,lng:129.0125}
     };
     const map = L.map('overview', {scrollWheelZoom:true}).setView([35.155,129.095], 11);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19,attribution:'© OpenStreetMap contributors'}).addTo(map);
@@ -203,7 +208,18 @@
     lifeButton.addEventListener('click',()=>{ const active=document.querySelector('.place.is-active'); const p = active ? places[active.dataset.id] : places[Object.keys(places)[0]]; showLife(p, currentLifeCat); });
 
     // ---- 動態讀取 busan-itinerary.txt 並產生行程清單與地圖圖釘 ----
-    const ALIASES = { '南浦／松島周邊午餐':'songdo', '西面／富田晚餐與自由活動':'seomyeon' };
+    const ALIASES = {
+      '南浦／松島周邊午餐':'songdo',
+      '西面／富田晚餐與自由活動':'seomyeon',
+      '西面地鐵站':'seomyeon',
+      '地鐵田埔站':'jeonpo',
+      '자갈치역·BIFF광장':'biff',
+      '金海輕軌站':'gimhaelrt',
+      '輕軌沙上站':'sasang',
+      '地鐵沙上站':'sasang',
+      '부평깡통시장':'bupyeongmarket',
+      '서구청':'seogugu'
+    };
     const WALK_SVG = '<svg class="transit-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/></svg>';
     const SUBWAY_SVG = '<svg class="transit-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 2c-4 0-8 .5-8 4v9.5C4 17.43 5.57 19 7.5 19L6 20.5v.5h2.23l2-2H12h1.77l2 2H18v-.5L16.5 19c1.93 0 3.5-1.57 3.5-3.5V6c0-3.5-4-4-8-4zM7.5 17c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm3.5-7H6V6h5v4zm2 0V6h5v4h-5zm3.5 7c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>';
     const BUS_SVG = '<svg class="transit-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM18 11H6V6h12v5z"/></svg>';
