@@ -35,10 +35,28 @@
     #life-categories .life-cat { border:1px solid var(--line); border-radius:999px; background:#fff; color:var(--ink); cursor:pointer; font:inherit; font-size:12.5px; padding:6px 12px; white-space:nowrap; }
     #life-categories .life-cat.active { background:var(--accent); border-color:var(--accent); color:#fff; }
     .map-status { background:var(--surface); border-bottom:1px solid var(--line); color:var(--muted); font-size:13px; overflow:hidden; padding:4px 14px 8px; text-overflow:ellipsis; white-space:nowrap; }
-    #geoji-fab { align-items:center; background:#3B1E1E; border-radius:999px; box-shadow:0 6px 18px rgba(0,0,0,.25); color:#fff; display:flex; font-size:14px; font-weight:700; gap:8px; padding:13px 20px; position:fixed; right:18px; bottom:18px; text-decoration:none; z-index:999; transition:.15s ease; }
-    #geoji-fab:hover { transform:translateY(-2px); box-shadow:0 8px 22px rgba(0,0,0,.3); }
-    #geoji-fab .fab-icon { align-items:center; background:#fff; border-radius:50%; color:#3B1E1E; display:flex; flex-shrink:0; font-size:13px; font-weight:900; height:24px; justify-content:center; width:24px; }
-    @media (max-width:640px){ #geoji-fab { bottom:14px; right:14px; padding:12px 16px; font-size:13px; } }
+    #must-have-button { font-weight:700; }
+    #must-have-overlay { align-items:center; background:rgba(20,16,14,.55); display:none; inset:0; justify-content:center; padding:20px; position:fixed; z-index:2000; }
+    #must-have-overlay.open { display:flex; }
+    #must-have-modal { background:#fff; border-radius:14px; box-shadow:0 20px 50px rgba(0,0,0,.3); display:flex; flex-direction:column; max-height:85vh; max-width:480px; width:100%; }
+    #must-have-modal header { align-items:center; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; padding:14px 18px; }
+    #must-have-modal h3 { font-size:16px; margin:0; }
+    #must-have-modal h3 small { color:var(--muted); display:block; font-size:11.5px; font-weight:400; margin-top:2px; }
+    #must-have-close { background:none; border:0; color:var(--muted); cursor:pointer; font-size:20px; line-height:1; padding:4px; }
+    #must-have-list { display:flex; flex-direction:column; flex:1 1 auto; gap:10px; min-height:120px; overflow-y:auto; padding:14px 18px; }
+    #must-have-list .mh-empty { color:var(--muted); font-size:13px; text-align:center; padding:24px 0; }
+    #must-have-list .mh-note { background:var(--soft); border-radius:10px; padding:10px 12px; position:relative; }
+    #must-have-list .mh-note .mh-meta { color:var(--muted); font-size:11px; margin-bottom:3px; }
+    #must-have-list .mh-note .mh-text { font-size:14px; line-height:1.55; white-space:pre-wrap; word-break:break-word; }
+    #must-have-list .mh-note .mh-del { background:none; border:0; color:var(--muted); cursor:pointer; font-size:12px; position:absolute; right:8px; top:8px; padding:2px 6px; }
+    #must-have-list .mh-note .mh-del:hover { color:#c0392b; }
+    #must-have-composer { border-top:1px solid var(--line); padding:12px 18px; }
+    #must-have-composer input, #must-have-composer textarea { border:1px solid var(--line); border-radius:8px; font:inherit; font-size:13.5px; padding:8px 10px; width:100%; box-sizing:border-box; }
+    #must-have-name { margin-bottom:6px; }
+    #must-have-text { min-height:60px; resize:vertical; }
+    #must-have-composer-row { align-items:center; display:flex; gap:8px; margin-top:8px; }
+    #must-have-send { background:var(--accent); border:0; border-radius:8px; color:#fff; cursor:pointer; font:inherit; font-size:13.5px; font-weight:600; padding:9px 16px; }
+    #must-have-status { color:var(--muted); font-size:11.5px; flex:1 1 auto; }
     #overview, #google-map, #naver-panel, #food-panel { flex:1 1 auto; min-height:0; width:100%; }
     #google-map { border:0; }
     #naver-panel, #food-panel { align-items:center; background:var(--surface); display:flex; flex-direction:column; justify-content:center; overflow:auto; padding:24px; text-align:center; }
@@ -76,14 +94,12 @@
       #life-categories { flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
       #life-categories::-webkit-scrollbar { display:none; }
       #life-categories .life-cat { flex:0 0 auto; }
-      #geoji-fab span:last-child { display:none; }
-      #geoji-fab { padding:12px; }
     }
   </style>
 </head>
 <body>
   <header>
-    <div class="title-row"><h1>釜山 8 天 7 夜｜互動行程地圖（修訂版）</h1><span class="header-actions"><a class="text-file-link" href="busan-itinerary.txt" target="_blank" rel="noopener">開啟行程文字檔</a><button id="life-button" class="text-file-link" type="button">附近生活機能（2km）</button></span></div>
+    <div class="title-row"><h1>釜山 8 天 7 夜｜互動行程地圖（修訂版）</h1><span class="header-actions"><a class="text-file-link" href="busan-itinerary.txt" target="_blank" rel="noopener">行程</a><button id="life-button" class="text-file-link" type="button">吃吃喝喝</button><a class="text-file-link" href="https://xn--v69ak0xskm.com/map" target="_blank" rel="noopener">乞丐地圖</a><button id="must-have-button" class="text-file-link" type="button">留言板</button></span></div>
   </header>
   <main class="layout">
     <section class="itinerary" id="itinerary" aria-label="行程">
@@ -298,9 +314,112 @@
     }
     initItinerary();
   </script>
-  <a id="geoji-fab" href="https://xn--v69ak0xskm.com/map" target="_blank" rel="noopener" title="開啟 거지맵，可用手機目前位置搜尋附近美食">
-    <span class="fab-icon">GJ</span>
-    <span>거지맵（附近美食）</span>
-  </a>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <div id="must-have-overlay">
+    <div id="must-have-modal" role="dialog" aria-label="留言板">
+      <header>
+        <h3>留言板<small>大家都能看到、都能新增，跨裝置即時同步</small></h3>
+        <button id="must-have-close" type="button" aria-label="關閉">✕</button>
+      </header>
+      <div id="must-have-list"><div class="mh-empty">載入中…</div></div>
+      <div id="must-have-composer">
+        <input id="must-have-name" type="text" placeholder="你的名字（選填，會記住方便下次使用）" maxlength="20">
+        <textarea id="must-have-text" placeholder="輸入必備事項、提醒、留言……" maxlength="500"></textarea>
+        <div id="must-have-composer-row">
+          <span id="must-have-status"></span>
+          <button id="must-have-send" type="button">送出</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function(){
+      // ====== 請先到 https://console.firebase.google.com/ 建立一個免費專案，
+      // 新增一個「Web app」，並開通「Realtime Database」（測試模式即可），
+      // 再把下面六個值換成你自己專案的設定值（在 Firebase 主控台 > 專案設定 > 一般 可以看到）======
+      const firebaseConfig = {
+        apiKey: "AIzaSyACASqeRh4VKleITK6TFEplalvscwKGav0",
+        authDomain: "busan-travel-3b335.firebaseapp.com",
+        databaseURL: "https://busan-travel-3b335-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "busan-travel-3b335",
+        storageBucket: "busan-travel-3b335.firebasestorage.app",
+        messagingSenderId: "1041054125575",
+        appId: "1:1041054125575:web:5ddef0c2b3ab21616924a2"
+      };
+
+      const overlay = document.getElementById('must-have-overlay');
+      const openBtn = document.getElementById('must-have-button');
+      const closeBtn = document.getElementById('must-have-close');
+      const listEl = document.getElementById('must-have-list');
+      const nameInput = document.getElementById('must-have-name');
+      const textInput = document.getElementById('must-have-text');
+      const sendBtn = document.getElementById('must-have-send');
+      const statusEl = document.getElementById('must-have-status');
+      const NAME_KEY = 'busan-must-have-name';
+      nameInput.value = localStorage.getItem(NAME_KEY) || '';
+
+      const isConfigured = !String(firebaseConfig.apiKey).startsWith('YOUR_');
+      let notesRef = null;
+
+      function renderNotes(notesObj){
+        const notes = Object.entries(notesObj || {}).map(([key, v]) => ({ key, ...v })).sort((a,b) => (b.ts||0) - (a.ts||0));
+        if(!notes.length){ listEl.innerHTML = '<div class="mh-empty">還沒有留言，第一則留言等你來寫！</div>'; return; }
+        listEl.innerHTML = notes.map(n => {
+          const time = n.ts ? new Date(n.ts).toLocaleString('zh-TW',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
+          const author = (n.author || '匿名').replace(/[<>]/g,'');
+          const text = (n.text || '').replace(/[<>]/g,'');
+          return '<div class="mh-note" data-key="'+n.key+'"><button class="mh-del" data-key="'+n.key+'" title="刪除這則留言">刪除</button><div class="mh-meta">'+author+'　'+time+'</div><div class="mh-text"></div></div>';
+        }).join('');
+        // 用 textContent 塞入文字，避免使用者輸入的內容被當成 HTML 執行
+        listEl.querySelectorAll('.mh-note').forEach((el, i) => { el.querySelector('.mh-text').textContent = notes[i].text || ''; });
+      }
+
+      function initFirebase(){
+        if(!isConfigured){
+          listEl.innerHTML = '<div class="mh-empty">留言板還沒設定好雲端資料庫。<br><br>請到 <a href="https://console.firebase.google.com/" target="_blank" rel="noopener">Firebase 主控台</a> 建立一個免費專案＋開通 Realtime Database，然後把設定值填進網頁原始碼裡 firebaseConfig 的地方（程式碼裡有註解說明），存檔後上傳到 GitHub 即可。</div>';
+          sendBtn.disabled = true;
+          return;
+        }
+        try {
+          if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+          notesRef = firebase.database().ref('busan-must-have-notes');
+          notesRef.on('value', snap => { renderNotes(snap.val()); }, err => { listEl.innerHTML = '<div class="mh-empty">讀取留言失敗：'+err.message+'</div>'; });
+        } catch(err){
+          listEl.innerHTML = '<div class="mh-empty">留言板初始化失敗：'+err.message+'</div>';
+        }
+      }
+
+      function sendNote(){
+        const text = textInput.value.trim();
+        if(!text) return;
+        const author = nameInput.value.trim() || '匿名';
+        localStorage.setItem(NAME_KEY, author);
+        if(!notesRef){ statusEl.textContent = '尚未連上雲端資料庫，無法送出'; return; }
+        sendBtn.disabled = true;
+        notesRef.push({ author, text, ts: Date.now() })
+          .then(() => { textInput.value = ''; statusEl.textContent = ''; })
+          .catch(err => { statusEl.textContent = '送出失敗：'+err.message; })
+          .finally(() => { sendBtn.disabled = false; });
+      }
+
+      function deleteNote(key){
+        if(!notesRef) return;
+        notesRef.child(key).remove().catch(err => { statusEl.textContent = '刪除失敗：'+err.message; });
+      }
+
+      function openModal(){ overlay.classList.add('open'); setTimeout(()=>textInput.focus(),0); }
+      function closeModal(){ overlay.classList.remove('open'); }
+      openBtn.addEventListener('click', openModal);
+      closeBtn.addEventListener('click', closeModal);
+      overlay.addEventListener('click', e => { if(e.target === overlay) closeModal(); });
+      document.addEventListener('keydown', e => { if(e.key === 'Escape' && overlay.classList.contains('open')) closeModal(); });
+      sendBtn.addEventListener('click', sendNote);
+      textInput.addEventListener('keydown', e => { if(e.key === 'Enter' && (e.metaKey || e.ctrlKey)) sendNote(); });
+      listEl.addEventListener('click', e => { const btn = e.target.closest('.mh-del'); if(btn) deleteNote(btn.dataset.key); });
+
+      initFirebase();
+    })();
+  </script>
 </body>
 </html>
