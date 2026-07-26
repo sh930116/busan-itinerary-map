@@ -235,7 +235,16 @@
     }
     function timeToMinutes(t){ const m=t.match(/^(\d{1,2}):(\d{2})/); if(!m) return null; return (+m[1])*60+(+m[2]); }
     function formatDuration(mins){ if(mins==null||mins<=0) return null; const h=Math.floor(mins/60), m=mins%60; if(h>0&&m>0) return h+'小時'+m+'分'; if(h>0) return h+'小時'; return m+'分'; }
-    function transitIconsHtml(text){ const icons=[]; if(/地鐵|站|역|전철|블루라인|동해선|輕軌|경전철/.test(text)) icons.push(SUBWAY_SVG); if(/巴士|公車|버스/.test(text)) icons.push(BUS_SVG); if(/步行|도보|走路/.test(text)) icons.push(WALK_SVG); if(/計程車|taxi|택시/.test(text)) icons.push(TAXI_ICON); return [...new Set(icons)].join(''); }
+    const PLANE_ICON = '✈️';
+    function transitIconsHtml(groundText, flightText){
+      if(/起飛|降落|登機|報到|託運|航班|flight/i.test(flightText || '')) return PLANE_ICON;
+      const icons=[];
+      if(/地鐵|捷運|輕軌|列車|藍線|경전철|전철|호선|블루라인|동해선|轉乘|直達|坐\s*\d+\s*站/.test(groundText)) icons.push(SUBWAY_SVG);
+      if(/巴士|公車|버스/.test(groundText)) icons.push(BUS_SVG);
+      if(/步行|도보|走路/.test(groundText)) icons.push(WALK_SVG);
+      if(/計程車|taxi|택시/.test(groundText)) icons.push(TAXI_ICON);
+      return [...new Set(icons)].join('');
+    }
     function parseStayMinutes(desc){
       if(!desc) return 0;
       const m = desc.match(/約\s*([\d.]+)\s*小時\s*(?:([\d]+)\s*分)?|約\s*([\d]+)\s*分/);
@@ -253,7 +262,9 @@
         if(gap!=null){ const stay = parseStayMinutes(fromStop.desc); durationMins = gap - stay; if(durationMins<=0) durationMins = null; }
       }
       const durationText = formatDuration(durationMins);
-      const iconsHtml = transitIconsHtml((toStop.transit || '') + ' ' + (toStop.desc || ''));
+      const groundText = (toStop.transit || '') + ' ' + (toStop.desc || '');
+      const flightText = (fromStop ? fromStop.desc || '' : '') + ' ' + groundText;
+      const iconsHtml = transitIconsHtml(groundText, flightText);
       if(!iconsHtml && !durationText) return '';
       return '　（' + iconsHtml + (durationText ? (iconsHtml?' ':'') + durationText : '') + '）';
     }
