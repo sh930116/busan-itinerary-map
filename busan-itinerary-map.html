@@ -36,27 +36,32 @@
     #life-categories .life-cat.active { background:var(--accent); border-color:var(--accent); color:#fff; }
     .map-status { background:var(--surface); border-bottom:1px solid var(--line); color:var(--muted); font-size:13px; overflow:hidden; padding:4px 14px 8px; text-overflow:ellipsis; white-space:nowrap; }
     #must-have-button { font-weight:700; }
-    #must-have-overlay { align-items:center; background:rgba(20,16,14,.55); display:none; inset:0; justify-content:center; padding:20px; position:fixed; z-index:2000; }
-    #must-have-overlay.open { display:flex; }
-    #must-have-modal { background:#fff; border-radius:14px; box-shadow:0 20px 50px rgba(0,0,0,.3); display:flex; flex-direction:column; max-height:85vh; max-width:480px; width:100%; }
-    #must-have-modal header { align-items:center; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; padding:14px 18px; }
-    #must-have-modal h3 { font-size:16px; margin:0; }
-    #must-have-modal h3 small { color:var(--muted); display:block; font-size:11.5px; font-weight:400; margin-top:2px; }
-    #must-have-close { background:none; border:0; color:var(--muted); cursor:pointer; font-size:20px; line-height:1; padding:4px; }
-    #must-have-list { display:flex; flex-direction:column; flex:1 1 auto; gap:10px; min-height:120px; overflow-y:auto; padding:14px 18px; }
-    #must-have-list .mh-empty { color:var(--muted); font-size:13px; text-align:center; padding:24px 0; }
-    #must-have-list .mh-note { background:var(--soft); border-radius:10px; padding:10px 12px; position:relative; }
-    #must-have-list .mh-note .mh-meta { color:var(--muted); font-size:11px; margin-bottom:3px; }
-    #must-have-list .mh-note .mh-text { font-size:14px; line-height:1.55; white-space:pre-wrap; word-break:break-word; }
-    #must-have-list .mh-note .mh-del { background:none; border:0; color:var(--muted); cursor:pointer; font-size:12px; position:absolute; right:8px; top:8px; padding:2px 6px; }
-    #must-have-list .mh-note .mh-del:hover { color:#c0392b; }
-    #must-have-composer { border-top:1px solid var(--line); padding:12px 18px; }
-    #must-have-composer input, #must-have-composer textarea { border:1px solid var(--line); border-radius:8px; font:inherit; font-size:13.5px; padding:8px 10px; width:100%; box-sizing:border-box; }
-    #must-have-name { margin-bottom:6px; }
-    #must-have-text { min-height:60px; resize:vertical; }
-    #must-have-composer-row { align-items:center; display:flex; gap:8px; margin-top:8px; }
-    #must-have-send { background:var(--accent); border:0; border-radius:8px; color:#fff; cursor:pointer; font:inherit; font-size:13.5px; font-weight:600; padding:9px 16px; }
-    #must-have-status { color:var(--muted); font-size:11.5px; flex:1 1 auto; }
+    .board-overlay { align-items:center; background:rgba(20,16,14,.55); display:none; inset:0; justify-content:center; padding:20px; position:fixed; z-index:2000; }
+    .board-overlay.open { display:flex; }
+    .board-modal { background:#fff; border-radius:14px; box-shadow:0 20px 50px rgba(0,0,0,.3); display:flex; flex-direction:column; max-height:85vh; max-width:480px; width:100%; }
+    .board-modal header { align-items:center; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; padding:14px 18px; }
+    .board-modal h3 { font-size:16px; margin:0; }
+    .board-modal h3 small { color:var(--muted); display:block; font-size:11.5px; font-weight:400; margin-top:2px; }
+    .board-close { background:none; border:0; color:var(--muted); cursor:pointer; font-size:20px; line-height:1; padding:4px; }
+    .board-list { display:flex; flex-direction:column; flex:1 1 auto; gap:10px; min-height:120px; overflow-y:auto; padding:14px 18px; }
+    .board-list .mh-empty { color:var(--muted); font-size:13px; text-align:center; padding:24px 0; }
+    .board-list .mh-note { background:var(--soft); border-radius:10px; padding:10px 12px; position:relative; }
+    .board-list .mh-note .mh-meta { color:var(--muted); font-size:11px; margin-bottom:3px; }
+    .board-list .mh-note .mh-text { font-size:14px; line-height:1.55; white-space:pre-wrap; word-break:break-word; }
+    .board-list .mh-note .mh-del { background:none; border:0; color:var(--muted); cursor:pointer; font-size:12px; position:absolute; right:8px; top:8px; padding:2px 6px; }
+    .board-list .mh-note .mh-del:hover { color:#c0392b; }
+    .board-composer { border-top:1px solid var(--line); padding:12px 18px; }
+    .board-composer input, .board-composer textarea { border:1px solid var(--line); border-radius:8px; font:inherit; font-size:13.5px; padding:8px 10px; width:100%; box-sizing:border-box; }
+    .board-composer .board-name { margin-bottom:6px; }
+    .board-composer .board-text { min-height:60px; resize:vertical; }
+    .board-composer-row { align-items:center; display:flex; gap:8px; margin-top:8px; }
+    .board-send { background:var(--accent); border:0; border-radius:8px; color:#fff; cursor:pointer; font:inherit; font-size:13.5px; font-weight:600; padding:9px 16px; }
+    .board-status { color:var(--muted); font-size:11.5px; flex:1 1 auto; }
+    .place-row { display:flex; align-items:stretch; gap:6px; margin:6px 0; }
+    .place-row .place { flex:1 1 auto; min-width:0; margin:0; width:auto; }
+    .place-note-btn { align-items:center; background:var(--soft); border:1px solid var(--line); border-radius:8px; color:var(--accent); cursor:pointer; display:flex; flex:0 0 auto; font-size:16px; font-weight:800; justify-content:center; width:36px; }
+    .place-note-btn:hover { background:var(--accent); border-color:var(--accent); color:#fff; }
+    .place-note-btn.has-notes { background:var(--accent); border-color:var(--accent); color:#fff; }
     #overview, #google-map, #naver-panel, #food-panel { flex:1 1 auto; min-height:0; width:100%; }
     #google-map { border:0; }
     #naver-panel, #food-panel { align-items:center; background:var(--surface); display:flex; flex-direction:column; justify-content:center; overflow:auto; padding:24px; text-align:center; }
@@ -151,6 +156,7 @@
       songdo:{name:'松島海上纜車',q:'Busan Air Cruise Songdo Cable Car',qko:'송도해상케이블카',lat:35.0773,lng:129.0161},
       songdobridge:{name:'松島龍宮雲橋',q:'Songdo Yonggung Suspension Bridge, Busan',qko:'송도용궁구름다리',lat:35.0750,lng:129.0200},
       jeonpo:{name:'田浦咖啡街',q:'Jeonpo Cafe Street, Busan',qko:'전포카페거리',lat:35.1555,lng:129.0669},
+      jeonpostation:{name:'田埔站（전포역）',q:'Jeonpo Station, Busan',qko:'전포역',lat:35.1528,lng:129.0654},
       gwanganli:{name:'廣安里海灘',q:'Gwangalli Beach, Busan',qko:'광안리해수욕장',lat:35.1532,lng:129.1188},
       bexco:{name:'BEXCO 釜山會展中心',q:'BEXCO, Busan',qko:'벡스코',lat:35.1686,lng:129.1362},
       emart:{name:'E-mart 門峴店',q:'E-Mart Munhyeon, Busan',qko:'이마트 문현점',lat:35.1393,lng:129.0670},
@@ -159,18 +165,18 @@
       gimhae:{name:'金海國際機場',q:'Gimhae International Airport',qko:'김해국제공항',lat:35.1795,lng:128.9382},
       gimhaelrt:{name:'金海輕軌站（공항역）',q:'Gimhae Light Rail Airport Station Busan',qko:'경전철 공항역',lat:35.1765,lng:128.9384},
       sasang:{name:'沙上站',q:'Sasang Station Busan',qko:'사상역',lat:35.1524,lng:128.9908},
-      jungang:{name:'地鐵中央站',q:'Jungang Station Busan',qko:'중앙역',lat:35.1008,lng:129.0198},
+      jungang:{name:'地鐵中央站',q:'Jungang Station Busan',qko:'부산 중앙역',lat:35.1008,lng:129.0198},
       bupyeongmarket:{name:'富平罐頭市場',q:'Bupyeong Kkangtong Market Busan',qko:'부평깡통시장',lat:35.1001,lng:129.0288},
-      seogugu:{name:'西區廳站',q:'Seogu-gu Office Station Busan',qko:'서구청',lat:35.0968,lng:129.0125}
+      seogugu:{name:'西區廳站',q:'Seogu-gu Office Station Busan',qko:'부산광역시 서구청',lat:35.0968,lng:129.0125}
     };
     const map = L.map('overview', {scrollWheelZoom:true}).setView([35.155,129.095], 11);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19,attribution:'© OpenStreetMap contributors'}).addTo(map);
     const markers = {};
     const icon = n => L.divIcon({className:'',html:`<div class="pin">${n}</div>`,iconSize:[25,25],iconAnchor:[12,12]});
-    const overview = document.getElementById('overview'); const frame = document.getElementById('google-map'); const naverPanel = document.getElementById('naver-panel'); const foodPanel = document.getElementById('food-panel'); const overviewButton = document.getElementById('overview-button'); const googleButton = document.getElementById('google-button'); const naverButton = document.getElementById('naver-button'); const foodButton = document.getElementById('food-button'); const lifeButton = document.getElementById('life-button'); const lifeCategories = document.getElementById('life-categories'); const selectedName = document.getElementById('selected-name'); const openGoogle = document.getElementById('open-google'); const openNaver = document.getElementById('open-naver'); const openFood = document.getElementById('open-food'); const openLife = document.getElementById('open-life'); let previousPlaceId = null; let currentMode = 'google'; let lifePlaceId = null; let currentLifeCat = 'restaurant';
+    const overview = document.getElementById('overview'); const frame = document.getElementById('google-map'); const naverPanel = document.getElementById('naver-panel'); const foodPanel = document.getElementById('food-panel'); const overviewButton = document.getElementById('overview-button'); const googleButton = document.getElementById('google-button'); const naverButton = document.getElementById('naver-button'); const foodButton = document.getElementById('food-button'); const lifeButton = document.getElementById('life-button'); const lifeCategories = document.getElementById('life-categories'); const selectedName = document.getElementById('selected-name'); const openGoogle = document.getElementById('open-google'); const openNaver = document.getElementById('open-naver'); const openFood = document.getElementById('open-food'); const openLife = document.getElementById('open-life'); let previousPlaceId = null; let currentMode = 'google'; let lifePlaceId = null; let currentLifeCat = 'restaurant'; const transitModeByPair = new Map();
     function setActiveButton(mode){ overviewButton.classList.toggle('active', mode==='overview'); googleButton.classList.toggle('active', mode==='google'); naverButton.classList.toggle('active', mode==='naver'); foodButton.classList.toggle('active', mode==='food'); lifeButton.classList.toggle('active', mode==='life'); openGoogle.style.display = (mode==='naver'||mode==='food'||mode==='life') ? 'none' : ''; openNaver.style.display = mode==='naver' ? '' : 'none'; openFood.style.display = mode==='food' ? '' : 'none'; openLife.style.display = mode==='life' ? '' : 'none'; lifeCategories.style.display = mode==='life' ? 'flex' : 'none'; currentMode = mode; }
     function showOverview(){ overview.style.display='block'; frame.style.display='none'; naverPanel.style.display='none'; foodPanel.style.display='none'; setActiveButton('overview'); selectedName.textContent='目前顯示全部行程地點'; setTimeout(()=>{ map.invalidateSize(); const bounds = Object.values(markers).map(m=>m.getLatLng()); if(bounds.length) map.fitBounds(bounds, {padding:[24,24]}); },0); }
-    function showGoogle(p, previous){ overview.style.display='none'; frame.style.display='block'; naverPanel.style.display='none'; foodPanel.style.display='none'; setActiveButton('google'); if(previous){ const route='https://www.google.com/maps?saddr='+encodeURIComponent(previous.q)+'&daddr='+encodeURIComponent(p.q); frame.src=route+'&output=embed'; openGoogle.href='https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent(previous.q)+'&destination='+encodeURIComponent(p.q)+'&travelmode=transit'; selectedName.textContent=previous.name+' → '+p.name; } else { frame.src='https://www.google.com/maps?q='+encodeURIComponent(p.q)+'&output=embed'; openGoogle.href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.q); selectedName.textContent=p.name; } }
+    function showGoogle(p, previous, mode){ overview.style.display='none'; frame.style.display='block'; naverPanel.style.display='none'; foodPanel.style.display='none'; setActiveButton('google'); const pQ = p.qko || p.q; if(previous){ const prevQ = previous.qko || previous.q; const dirflg = mode==='walking' ? 'w' : mode==='driving' ? 'd' : 'r'; const travelmode = mode==='walking' ? 'walking' : mode==='driving' ? 'driving' : 'transit'; const route='https://www.google.com/maps?saddr='+encodeURIComponent(prevQ)+'&daddr='+encodeURIComponent(pQ)+'&dirflg='+dirflg; frame.src=route+'&output=embed'; openGoogle.href='https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent(prevQ)+'&destination='+encodeURIComponent(pQ)+'&travelmode='+travelmode; selectedName.textContent=previous.name+' → '+p.name; } else { frame.src='https://www.google.com/maps?q='+encodeURIComponent(pQ)+'&output=embed'; openGoogle.href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(pQ); selectedName.textContent=p.name; } }
     function naverSearchUrl(p){ return 'https://map.naver.com/p/search/'+encodeURIComponent(p.qko || p.q); }
     function naverAppRouteUrl(previous, p){ return 'nmap://route/public?slat='+previous.lat+'&slng='+previous.lng+'&sname='+encodeURIComponent(previous.qko || previous.q)+'&dlat='+p.lat+'&dlng='+p.lng+'&dname='+encodeURIComponent(p.qko || p.q)+'&appname=busan.itinerary.map'; }
     function showNaver(p, previous){ overview.style.display='none'; frame.style.display='none'; foodPanel.style.display='none'; naverPanel.style.display='flex'; setActiveButton('naver'); const destUrl = naverSearchUrl(p); openNaver.href = destUrl; if(previous){ selectedName.textContent = previous.name+' → '+p.name; const routeUrl = naverAppRouteUrl(previous, p); naverPanel.innerHTML = '<div class="naver-icon">N</div><h3>'+previous.name+' → '+p.name+'</h3><p class="hint">Naver 地圖不支援嵌入預覽，請用下方連結在新分頁開啟（已自動代入韓文地點名稱，搜尋更準確）。手機若已安裝 Naver Map App，可直接開啟 App 內路線導航。</p><div class="naver-links"><a class="naver-link-btn primary" href="'+destUrl+'" target="_blank" rel="noopener">在 Naver 地圖開啟「'+p.name+'」<small>網頁版地點搜尋（'+(p.qko||p.q)+'）</small></a><a class="naver-link-btn" href="'+routeUrl+'">開啟 Naver Map App 路線導航<small>需手機已安裝 Naver Map App</small></a></div>'; } else { selectedName.textContent = p.name; naverPanel.innerHTML = '<div class="naver-icon">N</div><h3>'+p.name+'</h3><p class="hint">Naver 地圖不支援嵌入預覽，請用下方連結在新分頁開啟查看地點（已自動代入韓文地點名稱，搜尋更準確）。</p><div class="naver-links"><a class="naver-link-btn primary" href="'+destUrl+'" target="_blank" rel="noopener">在 Naver 地圖開啟「'+p.name+'」<small>網頁版地點搜尋（'+(p.qko||p.q)+'）</small></a></div>'; } }
@@ -193,11 +199,12 @@
       const id=btn.dataset.id, p=places[id];
       if(!p) return;
       const previous=previousPlaceId && previousPlaceId!==id ? places[previousPlaceId] : null;
+      const mode = previous ? transitModeByPair.get(previousPlaceId+'>'+id) : null;
       document.querySelectorAll('.place').forEach(x=>x.classList.remove('is-active'));
       btn.classList.add('is-active');
       map.setView([p.lat,p.lng],14);
       if(markers[id]) markers[id].openPopup();
-      if(currentMode==='naver'){ showNaver(p,previous); } else if(currentMode==='food'){ showFood(p); } else if(currentMode==='life'){ showLife(p, currentLifeCat); } else { showGoogle(p,previous); }
+      if(currentMode==='naver'){ showNaver(p,previous); } else if(currentMode==='food'){ showFood(p); } else if(currentMode==='life'){ showLife(p, currentLifeCat); } else { showGoogle(p,previous,mode); }
       previousPlaceId=id;
     }
     document.getElementById('itinerary').addEventListener('click', e => { const btn = e.target.closest('.place[data-id]'); if(btn) activatePlace(btn); });
@@ -212,7 +219,7 @@
       '南浦／松島周邊午餐':'songdo',
       '西面／富田晚餐與自由活動':'seomyeon',
       '西面地鐵站':'seomyeon',
-      '地鐵田埔站':'jeonpo',
+      '地鐵田埔站':'jeonpostation',
       '자갈치역·BIFF광장':'biff',
       '金海輕軌站':'gimhaelrt',
       '輕軌沙上站':'sasang',
@@ -244,6 +251,17 @@
       if(/步行|도보|走路/.test(groundText)) icons.push(WALK_SVG);
       if(/計程車|taxi|택시/.test(groundText)) icons.push(TAXI_ICON);
       return [...new Set(icons)].join('');
+    }
+    function detectPrimaryMode(fromStop, toStop){
+      if(!toStop) return null;
+      const groundText = (toStop.transit || '') + ' ' + (toStop.desc || '');
+      const hasSubwayOrBus = /地鐵|捷運|輕軌|列車|藍線|경전철|전철|호선|블루라인|동해선|轉乘|直達|坐\s*\d+\s*站|巴士|公車|버스/.test(groundText);
+      const hasTaxi = /計程車|taxi|택시/.test(groundText);
+      const hasWalk = /步行|도보|走路/.test(groundText);
+      if(hasTaxi && !hasSubwayOrBus) return 'driving';
+      if(hasSubwayOrBus) return 'transit';
+      if(hasWalk) return 'walking';
+      return null;
     }
     function parseStayMinutes(desc){
       if(!desc) return 0;
@@ -300,7 +318,15 @@
         dayEl.appendChild(h2);
         day.stops.forEach((stop, i) => {
           const placeId = matchPlace(stop.name);
-          const suffix = buildSuffix(stop, day.stops[i+1]);
+          const nextStop = day.stops[i+1];
+          const suffix = buildSuffix(stop, nextStop);
+          if(placeId && nextStop){
+            const nextPlaceId = matchPlace(nextStop.name);
+            if(nextPlaceId && nextPlaceId !== placeId){
+              const mode = detectPrimaryMode(stop, nextStop);
+              if(mode) transitModeByPair.set(placeId+'>'+nextPlaceId, mode);
+            }
+          }
           const smallParts = [stop.time+'｜'+stop.desc];
           if(stop.transit) smallParts.push('交通：'+stop.transit);
           const smallHtml = smallParts.join('<br>');
@@ -310,14 +336,28 @@
             const btn = document.createElement('button');
             btn.className = 'place'; btn.type = 'button'; btn.dataset.id = placeId;
             btn.innerHTML = '<strong>'+stop.name+suffix+'</strong><small>'+smallHtml+'</small>';
-            dayEl.appendChild(btn);
+            const row = document.createElement('div');
+            row.className = 'place-row';
+            row.appendChild(btn);
+            const noteBtn = document.createElement('button');
+            noteBtn.type = 'button'; noteBtn.className = 'place-note-btn'; noteBtn.dataset.id = placeId; noteBtn.dataset.name = stop.name; noteBtn.title = '注意事項／準備事項';
+            noteBtn.textContent = '！';
+            row.appendChild(noteBtn);
+            dayEl.appendChild(row);
           } else {
             unmatchedCount++;
             const div = document.createElement('div');
             div.className = 'place place-unmatched';
             div.style.opacity = '.65'; div.style.cursor = 'default';
             div.innerHTML = '<strong>'+stop.name+suffix+'</strong><small>'+smallHtml+'（尚未對應地圖座標，僅顯示文字）</small>';
-            dayEl.appendChild(div);
+            const row = document.createElement('div');
+            row.className = 'place-row';
+            row.appendChild(div);
+            const noteBtn = document.createElement('button');
+            noteBtn.type = 'button'; noteBtn.className = 'place-note-btn'; noteBtn.dataset.name = stop.name; noteBtn.title = '注意事項／準備事項';
+            noteBtn.textContent = '！';
+            row.appendChild(noteBtn);
+            dayEl.appendChild(row);
           }
         });
         container.appendChild(dayEl);
@@ -343,19 +383,36 @@
   </script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-  <div id="must-have-overlay">
-    <div id="must-have-modal" role="dialog" aria-label="留言板">
+  <div id="must-have-overlay" class="board-overlay">
+    <div id="must-have-modal" class="board-modal" role="dialog" aria-label="留言板">
       <header>
         <h3>留言板<small>大家都能看到、都能新增，跨裝置即時同步</small></h3>
-        <button id="must-have-close" type="button" aria-label="關閉">✕</button>
+        <button id="must-have-close" class="board-close" type="button" aria-label="關閉">✕</button>
       </header>
-      <div id="must-have-list"><div class="mh-empty">載入中…</div></div>
-      <div id="must-have-composer">
-        <input id="must-have-name" type="text" placeholder="你的名字（選填，會記住方便下次使用）" maxlength="20">
-        <textarea id="must-have-text" placeholder="輸入必備事項、提醒、留言……" maxlength="500"></textarea>
-        <div id="must-have-composer-row">
-          <span id="must-have-status"></span>
-          <button id="must-have-send" type="button">送出</button>
+      <div id="must-have-list" class="board-list"><div class="mh-empty">載入中…</div></div>
+      <div id="must-have-composer" class="board-composer">
+        <input id="must-have-name" class="board-name" type="text" placeholder="你的名字（選填，會記住方便下次使用）" maxlength="20">
+        <textarea id="must-have-text" class="board-text" placeholder="輸入必備事項、提醒、留言……" maxlength="500"></textarea>
+        <div id="must-have-composer-row" class="board-composer-row">
+          <span id="must-have-status" class="board-status"></span>
+          <button id="must-have-send" class="board-send" type="button">送出</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="place-notes-overlay" class="board-overlay">
+    <div id="place-notes-modal" class="board-modal" role="dialog" aria-label="地點注意事項">
+      <header>
+        <h3 id="place-notes-title">注意事項<small>這個地點的提醒、準備事項，大家都能看到、都能新增</small></h3>
+        <button id="place-notes-close" class="board-close" type="button" aria-label="關閉">✕</button>
+      </header>
+      <div id="place-notes-list" class="board-list"><div class="mh-empty">載入中…</div></div>
+      <div id="place-notes-composer" class="board-composer">
+        <input id="place-notes-name" class="board-name" type="text" placeholder="你的名字（選填，會記住方便下次使用）" maxlength="20">
+        <textarea id="place-notes-text" class="board-text" placeholder="輸入這個地點的注意事項、準備事項……" maxlength="500"></textarea>
+        <div id="place-notes-composer-row" class="board-composer-row">
+          <span id="place-notes-status" class="board-status"></span>
+          <button id="place-notes-send" class="board-send" type="button">送出</button>
         </div>
       </div>
     </div>
@@ -374,78 +431,93 @@
         messagingSenderId: "1041054125575",
         appId: "1:1041054125575:web:5ddef0c2b3ab21616924a2"
       };
-
-      const overlay = document.getElementById('must-have-overlay');
-      const openBtn = document.getElementById('must-have-button');
-      const closeBtn = document.getElementById('must-have-close');
-      const listEl = document.getElementById('must-have-list');
-      const nameInput = document.getElementById('must-have-name');
-      const textInput = document.getElementById('must-have-text');
-      const sendBtn = document.getElementById('must-have-send');
-      const statusEl = document.getElementById('must-have-status');
-      const NAME_KEY = 'busan-must-have-name';
-      nameInput.value = localStorage.getItem(NAME_KEY) || '';
-
       const isConfigured = !String(firebaseConfig.apiKey).startsWith('YOUR_');
-      let notesRef = null;
-
-      function renderNotes(notesObj){
-        const notes = Object.entries(notesObj || {}).map(([key, v]) => ({ key, ...v })).sort((a,b) => (b.ts||0) - (a.ts||0));
-        if(!notes.length){ listEl.innerHTML = '<div class="mh-empty">還沒有留言，第一則留言等你來寫！</div>'; return; }
-        listEl.innerHTML = notes.map(n => {
-          const time = n.ts ? new Date(n.ts).toLocaleString('zh-TW',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
-          const author = (n.author || '匿名').replace(/[<>]/g,'');
-          const text = (n.text || '').replace(/[<>]/g,'');
-          return '<div class="mh-note" data-key="'+n.key+'"><button class="mh-del" data-key="'+n.key+'" title="刪除這則留言">刪除</button><div class="mh-meta">'+author+'　'+time+'</div><div class="mh-text"></div></div>';
-        }).join('');
-        // 用 textContent 塞入文字，避免使用者輸入的內容被當成 HTML 執行
-        listEl.querySelectorAll('.mh-note').forEach((el, i) => { el.querySelector('.mh-text').textContent = notes[i].text || ''; });
+      let fbReady = false;
+      function ensureFirebaseInit(){
+        if(fbReady || !isConfigured) return isConfigured;
+        try { if(!firebase.apps.length) firebase.initializeApp(firebaseConfig); fbReady = true; return true; } catch(err){ return false; }
       }
+      const NAME_KEY = 'busan-must-have-name';
 
-      function initFirebase(){
-        if(!isConfigured){
-          listEl.innerHTML = '<div class="mh-empty">留言板還沒設定好雲端資料庫。<br><br>請到 <a href="https://console.firebase.google.com/" target="_blank" rel="noopener">Firebase 主控台</a> 建立一個免費專案＋開通 Realtime Database，然後把設定值填進網頁原始碼裡 firebaseConfig 的地方（程式碼裡有註解說明），存檔後上傳到 GitHub 即可。</div>';
+      // 建立一個可重複使用的留言板：傳入各元素 id 前綴、Firebase 路徑，回傳 { open(path,title), close() }
+      function createBoard(prefix){
+        const overlay = document.getElementById(prefix+'-overlay');
+        const closeBtn = document.getElementById(prefix+'-close');
+        const listEl = document.getElementById(prefix+'-list');
+        const nameInput = document.getElementById(prefix+'-name');
+        const textInput = document.getElementById(prefix+'-text');
+        const sendBtn = document.getElementById(prefix+'-send');
+        const statusEl = document.getElementById(prefix+'-status');
+        nameInput.value = localStorage.getItem(NAME_KEY) || '';
+        let notesRef = null;
+
+        function renderNotes(notesObj){
+          const notes = Object.entries(notesObj || {}).map(([key, v]) => ({ key, ...v })).sort((a,b) => (b.ts||0) - (a.ts||0));
+          if(!notes.length){ listEl.innerHTML = '<div class="mh-empty">還沒有留言，第一則留言等你來寫！</div>'; return; }
+          listEl.innerHTML = notes.map(n => {
+            const time = n.ts ? new Date(n.ts).toLocaleString('zh-TW',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
+            const author = (n.author || '匿名').replace(/[<>]/g,'');
+            return '<div class="mh-note" data-key="'+n.key+'"><button class="mh-del" data-key="'+n.key+'" title="刪除這則留言">刪除</button><div class="mh-meta">'+author+'　'+time+'</div><div class="mh-text"></div></div>';
+          }).join('');
+          listEl.querySelectorAll('.mh-note').forEach((el, i) => { el.querySelector('.mh-text').textContent = notes[i].text || ''; });
+        }
+
+        function connect(dbPath){
+          if(notesRef) notesRef.off();
+          if(!ensureFirebaseInit()){
+            listEl.innerHTML = '<div class="mh-empty">留言板還沒設定好雲端資料庫。<br><br>請到 <a href="https://console.firebase.google.com/" target="_blank" rel="noopener">Firebase 主控台</a> 建立一個免費專案＋開通 Realtime Database，然後把設定值填進網頁原始碼裡 firebaseConfig 的地方，存檔後上傳到 GitHub 即可。</div>';
+            sendBtn.disabled = true;
+            return;
+          }
+          sendBtn.disabled = false;
+          listEl.innerHTML = '<div class="mh-empty">載入中…</div>';
+          try {
+            notesRef = firebase.database().ref(dbPath);
+            notesRef.on('value', snap => { renderNotes(snap.val()); }, err => { listEl.innerHTML = '<div class="mh-empty">讀取留言失敗：'+err.message+'</div>'; });
+          } catch(err){
+            listEl.innerHTML = '<div class="mh-empty">留言板初始化失敗：'+err.message+'</div>';
+          }
+        }
+
+        function sendNote(){
+          const text = textInput.value.trim();
+          if(!text) return;
+          const author = nameInput.value.trim() || '匿名';
+          localStorage.setItem(NAME_KEY, author);
+          if(!notesRef){ statusEl.textContent = '尚未連上雲端資料庫，無法送出'; return; }
           sendBtn.disabled = true;
-          return;
+          notesRef.push({ author, text, ts: Date.now() })
+            .then(() => { textInput.value = ''; statusEl.textContent = ''; })
+            .catch(err => { statusEl.textContent = '送出失敗：'+err.message; })
+            .finally(() => { sendBtn.disabled = false; });
         }
-        try {
-          if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-          notesRef = firebase.database().ref('busan-must-have-notes');
-          notesRef.on('value', snap => { renderNotes(snap.val()); }, err => { listEl.innerHTML = '<div class="mh-empty">讀取留言失敗：'+err.message+'</div>'; });
-        } catch(err){
-          listEl.innerHTML = '<div class="mh-empty">留言板初始化失敗：'+err.message+'</div>';
-        }
+        function deleteNote(key){ if(!notesRef) return; notesRef.child(key).remove().catch(err => { statusEl.textContent = '刪除失敗：'+err.message; }); }
+
+        function close(){ overlay.classList.remove('open'); }
+        closeBtn.addEventListener('click', close);
+        overlay.addEventListener('click', e => { if(e.target === overlay) close(); });
+        document.addEventListener('keydown', e => { if(e.key === 'Escape' && overlay.classList.contains('open')) close(); });
+        sendBtn.addEventListener('click', sendNote);
+        textInput.addEventListener('keydown', e => { if(e.key === 'Enter' && (e.metaKey || e.ctrlKey)) sendNote(); });
+        listEl.addEventListener('click', e => { const btn = e.target.closest('.mh-del'); if(btn) deleteNote(btn.dataset.key); });
+
+        return { open(dbPath){ overlay.classList.add('open'); connect(dbPath); setTimeout(()=>textInput.focus(),0); }, close };
       }
 
-      function sendNote(){
-        const text = textInput.value.trim();
-        if(!text) return;
-        const author = nameInput.value.trim() || '匿名';
-        localStorage.setItem(NAME_KEY, author);
-        if(!notesRef){ statusEl.textContent = '尚未連上雲端資料庫，無法送出'; return; }
-        sendBtn.disabled = true;
-        notesRef.push({ author, text, ts: Date.now() })
-          .then(() => { textInput.value = ''; statusEl.textContent = ''; })
-          .catch(err => { statusEl.textContent = '送出失敗：'+err.message; })
-          .finally(() => { sendBtn.disabled = false; });
-      }
+      const mustHaveBoard = createBoard('must-have');
+      document.getElementById('must-have-button').addEventListener('click', () => mustHaveBoard.open('busan-must-have-notes'));
 
-      function deleteNote(key){
-        if(!notesRef) return;
-        notesRef.child(key).remove().catch(err => { statusEl.textContent = '刪除失敗：'+err.message; });
-      }
-
-      function openModal(){ overlay.classList.add('open'); setTimeout(()=>textInput.focus(),0); }
-      function closeModal(){ overlay.classList.remove('open'); }
-      openBtn.addEventListener('click', openModal);
-      closeBtn.addEventListener('click', closeModal);
-      overlay.addEventListener('click', e => { if(e.target === overlay) closeModal(); });
-      document.addEventListener('keydown', e => { if(e.key === 'Escape' && overlay.classList.contains('open')) closeModal(); });
-      sendBtn.addEventListener('click', sendNote);
-      textInput.addEventListener('keydown', e => { if(e.key === 'Enter' && (e.metaKey || e.ctrlKey)) sendNote(); });
-      listEl.addEventListener('click', e => { const btn = e.target.closest('.mh-del'); if(btn) deleteNote(btn.dataset.key); });
-
-      initFirebase();
+      const placeNotesBoard = createBoard('place-notes');
+      const placeNotesTitle = document.getElementById('place-notes-title');
+      function slugify(text){ return String(text).trim().replace(/[^\w\u4e00-\u9fff\uac00-\ud7a3]+/g,'-').replace(/^-+|-+$/g,'') || 'note'; }
+      document.getElementById('itinerary').addEventListener('click', e => {
+        const btn = e.target.closest('.place-note-btn');
+        if(!btn) return;
+        const placeId = btn.dataset.id || slugify(btn.dataset.name);
+        const label = btn.dataset.name || placeId;
+        placeNotesTitle.innerHTML = label+'<small>這個地點的提醒、準備事項，大家都能看到、都能新增</small>';
+        placeNotesBoard.open('busan-place-notes/'+encodeURIComponent(placeId));
+      });
     })();
   </script>
 </body>
