@@ -104,7 +104,7 @@
 </head>
 <body>
   <header>
-    <div class="title-row"><h1>釜山 8 天 7 夜｜互動行程地圖（修訂版）</h1><span class="header-actions"><a class="text-file-link" href="busan-itinerary.txt" target="_blank" rel="noopener">行程</a><button id="life-button" class="text-file-link" type="button">吃吃喝喝</button><a class="text-file-link" href="https://xn--v69ak0xskm.com/map" target="_blank" rel="noopener">乞丐地圖</a><button id="must-have-button" class="text-file-link" type="button">留言板</button></span></div>
+    <div class="title-row"><h1>釜山 8 天 7 夜｜互動行程地圖（修訂版）</h1><span class="header-actions"><a class="text-file-link" href="busan-itinerary.txt" target="_blank" rel="noopener">行程</a><button id="life-button" class="text-file-link" type="button">吃吃喝喝</button><a class="text-file-link" href="https://xn--v69ak0xskm.com/map" target="_blank" rel="noopener">乞丐地圖</a><button id="must-have-button" class="text-file-link" type="button">留言板</button><a class="text-file-link" href="https://drive.google.com/drive/folders/1Bh4U7dCRlr2gKHtS0-x2CknwmzGb7322?usp=drive_link" target="_blank" rel="noopener">雲端</a></span></div>
   </header>
   <main class="layout">
     <section class="itinerary" id="itinerary" aria-label="行程">
@@ -248,28 +248,22 @@
     function timeToMinutes(t){ const m=t.match(/^(\d{1,2}):(\d{2})/); if(!m) return null; return (+m[1])*60+(+m[2]); }
     function formatDuration(mins){ if(mins==null||mins<=0) return null; const h=Math.floor(mins/60), m=mins%60; if(h>0&&m>0) return h+'小時'+m+'分'; if(h>0) return h+'小時'; return m+'分'; }
     const PLANE_ICON = '✈️';
-    const WALK_OVERRIDE = /走路到|走到|步行到|走路轉乘|步行轉乘|도보로/;
-    function transitIconsHtml(groundText, flightText){
-      if(/起飛|降落|登機|報到|託運|航班|flight/i.test(flightText || '')) return PLANE_ICON;
-      if(WALK_OVERRIDE.test(groundText)) return WALK_SVG;
-      const icons=[];
-      if(/地鐵|捷運|輕軌|列車|藍線|경전철|전철|호선|블루라인|동해선|轉乘|直達|坐\s*\d+\s*站/.test(groundText)) icons.push(SUBWAY_SVG);
-      if(/巴士|公車|버스/.test(groundText)) icons.push(BUS_SVG);
-      if(/步行|도보|走路/.test(groundText)) icons.push(WALK_SVG);
-      if(/計程車|taxi|택시/.test(groundText)) icons.push(TAXI_ICON);
-      return [...new Set(icons)].join('');
-    }
     function detectPrimaryMode(fromStop, toStop){
       if(!toStop) return null;
       const groundText = (toStop.transit || '') + ' ' + (toStop.desc || '');
-      if(WALK_OVERRIDE.test(groundText)) return 'walking';
-      const hasSubwayOrBus = /地鐵|捷運|輕軌|列車|藍線|경전철|전철|호선|블루라인|동해선|轉乘|直達|坐\s*\d+\s*站|巴士|公車|버스/.test(groundText);
-      const hasTaxi = /計程車|taxi|택시/.test(groundText);
-      const hasWalk = /步行|도보|走路/.test(groundText);
-      if(hasTaxi && !hasSubwayOrBus) return 'driving';
-      if(hasSubwayOrBus) return 'transit';
-      if(hasWalk) return 'walking';
+      if(/走路|走到|步行|도보/.test(groundText)) return 'walking';
+      if(/計程車|taxi|택시/.test(groundText)) return 'driving';
+      if(/地鐵|捷運|輕軌|列車|藍線|경전철|전철|호선|블루라인|동해선|轉乘|直達|坐\s*\d+\s*站/.test(groundText)) return 'subway';
+      if(/巴士|公車|버스/.test(groundText)) return 'bus';
       return null;
+    }
+    function transitIconsHtml(groundText, flightText, mode){
+      if(/起飛|降落|登機|報到|託運|航班|flight/i.test(flightText || '')) return PLANE_ICON;
+      if(mode==='walking') return WALK_SVG;
+      if(mode==='subway') return SUBWAY_SVG;
+      if(mode==='bus') return BUS_SVG;
+      if(mode==='driving') return TAXI_ICON;
+      return '';
     }
     function parseStayMinutes(desc){
       if(!desc) return 0;
@@ -290,7 +284,8 @@
       const durationText = formatDuration(durationMins);
       const groundText = (toStop.transit || '') + ' ' + (toStop.desc || '');
       const flightText = (fromStop ? fromStop.desc || '' : '') + ' ' + groundText;
-      const iconsHtml = transitIconsHtml(groundText, flightText);
+      const mode = detectPrimaryMode(fromStop, toStop);
+      const iconsHtml = transitIconsHtml(groundText, flightText, mode);
       if(!iconsHtml && !durationText) return '';
       return '　（' + iconsHtml + (durationText ? (iconsHtml?' ':'') + durationText : '') + '）';
     }
