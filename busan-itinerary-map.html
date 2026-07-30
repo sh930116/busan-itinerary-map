@@ -253,7 +253,7 @@
       const groundText = (toStop.transit || '') + ' ' + (toStop.desc || '');
       if(/走路|走到|步行|도보/.test(groundText)) return 'walking';
       if(/計程車|taxi|택시/.test(groundText)) return 'driving';
-      if(/地鐵|捷運|輕軌|列車|藍線|경전철|전철|호선|블루라인|동해선|轉乘|直達|坐\s*\d+\s*站/.test(groundText)) return 'subway';
+      if(/地鐵|捷運|輕軌|列車|藍線|東海線|경전철|전철|호선|블루라인|동해선|轉乘|接駁|直達|坐\s*\d+\s*站/.test(groundText)) return 'subway';
       if(/巴士|公車|버스/.test(groundText)) return 'bus';
       return null;
     }
