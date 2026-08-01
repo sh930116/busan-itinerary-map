@@ -57,6 +57,8 @@
     .board-composer-row { align-items:center; display:flex; gap:8px; margin-top:8px; }
     .board-send { background:var(--accent); border:0; border-radius:8px; color:#fff; cursor:pointer; font:inherit; font-size:13.5px; font-weight:600; padding:9px 16px; }
     .board-status { color:var(--muted); font-size:11.5px; flex:1 1 auto; }
+    .place-memo-textarea { border:0; flex:1 1 auto; font:inherit; font-size:14.5px; line-height:1.7; min-height:220px; outline:none; padding:16px 18px; resize:vertical; }
+    .place-memo-footer { border-top:1px solid var(--line); color:var(--muted); font-size:11.5px; padding:8px 18px; }
     .place-row { display:flex; align-items:stretch; gap:6px; margin:6px 0; }
     .place-row .place { flex:1 1 auto; min-width:0; margin:0; width:auto; }
     .place-note-btn { align-items:center; background:var(--soft); border:1px solid var(--line); border-radius:8px; color:var(--accent); cursor:pointer; display:flex; flex:0 0 auto; font-size:16px; font-weight:800; justify-content:center; width:36px; }
@@ -404,20 +406,13 @@
     </div>
   </div>
   <div id="place-notes-overlay" class="board-overlay">
-    <div id="place-notes-modal" class="board-modal" role="dialog" aria-label="地點注意事項">
+    <div id="place-notes-modal" class="board-modal" role="dialog" aria-label="地點備忘錄">
       <header>
-        <h3 id="place-notes-title">注意事項<small>這個地點的提醒、準備事項，大家都能看到、都能新增</small></h3>
+        <h3 id="place-notes-title">備忘錄<small>任何人都可以直接編輯，會自動同步、自動儲存</small></h3>
         <button id="place-notes-close" class="board-close" type="button" aria-label="關閉">✕</button>
       </header>
-      <div id="place-notes-list" class="board-list"><div class="mh-empty">載入中…</div></div>
-      <div id="place-notes-composer" class="board-composer">
-        <input id="place-notes-name" class="board-name" type="text" placeholder="你的名字（選填，會記住方便下次使用）" maxlength="20">
-        <textarea id="place-notes-text" class="board-text" placeholder="輸入這個地點的注意事項、準備事項……" maxlength="500"></textarea>
-        <div id="place-notes-composer-row" class="board-composer-row">
-          <span id="place-notes-status" class="board-status"></span>
-          <button id="place-notes-send" class="board-send" type="button">送出</button>
-        </div>
-      </div>
+      <textarea id="place-notes-textarea" class="place-memo-textarea" placeholder="這個地點需要做什麼事、注意事項……"></textarea>
+      <div class="place-memo-footer"><span id="place-notes-status"></span></div>
     </div>
   </div>
   <script>
@@ -510,16 +505,60 @@
       const mustHaveBoard = createBoard('must-have');
       document.getElementById('must-have-button').addEventListener('click', () => mustHaveBoard.open('busan-must-have-notes'));
 
-      const placeNotesBoard = createBoard('place-notes');
-      const placeNotesTitle = document.getElementById('place-notes-title');
+      // 簡易共用備忘錄：一個地點對應一段文字，任何人打開都能直接編輯，自動同步、自動儲存
+      function createMemo(prefix){
+        const overlay = document.getElementById(prefix+'-overlay');
+        const closeBtn = document.getElementById(prefix+'-close');
+        const textarea = document.getElementById(prefix+'-textarea');
+        const statusEl = document.getElementById(prefix+'-status');
+        const titleEl = document.getElementById(prefix+'-title');
+        let memoRef = null;
+        let saveTimer = null;
+
+        function connect(dbPath){
+          if(memoRef) memoRef.off();
+          if(!ensureFirebaseInit()){
+            textarea.value = '';
+            textarea.disabled = true;
+            statusEl.textContent = '尚未設定雲端資料庫，暫時無法使用備忘錄';
+            return;
+          }
+          textarea.disabled = false;
+          statusEl.textContent = '載入中…';
+          try {
+            memoRef = firebase.database().ref(dbPath);
+            memoRef.on('value', snap => {
+              const val = snap.val() || '';
+              if(document.activeElement !== textarea){ textarea.value = val; }
+              statusEl.textContent = '已同步';
+            }, err => { statusEl.textContent = '讀取失敗：'+err.message; });
+          } catch(err){
+            statusEl.textContent = '初始化失敗：'+err.message;
+          }
+        }
+        function save(){
+          if(!memoRef) return;
+          memoRef.set(textarea.value)
+            .then(() => { statusEl.textContent = '已儲存'; })
+            .catch(err => { statusEl.textContent = '儲存失敗：'+err.message; });
+        }
+        textarea.addEventListener('input', () => { statusEl.textContent = '輸入中…'; clearTimeout(saveTimer); saveTimer = setTimeout(save, 600); });
+        function close(){ overlay.classList.remove('open'); }
+        closeBtn.addEventListener('click', close);
+        overlay.addEventListener('click', e => { if(e.target === overlay) close(); });
+        document.addEventListener('keydown', e => { if(e.key === 'Escape' && overlay.classList.contains('open')) close(); });
+
+        return { open(dbPath, label){ overlay.classList.add('open'); titleEl.innerHTML = label+'<small>任何人都可以直接編輯，會自動同步、自動儲存</small>'; connect(dbPath); setTimeout(()=>textarea.focus(),0); } };
+      }
+
+      const placeMemo = createMemo('place-notes');
       function slugify(text){ return String(text).trim().replace(/[^\w\u4e00-\u9fff\uac00-\ud7a3]+/g,'-').replace(/^-+|-+$/g,'') || 'note'; }
       document.getElementById('itinerary').addEventListener('click', e => {
         const btn = e.target.closest('.place-note-btn');
         if(!btn) return;
         const placeId = btn.dataset.id || slugify(btn.dataset.name);
         const label = btn.dataset.name || placeId;
-        placeNotesTitle.innerHTML = label+'<small>這個地點的提醒、準備事項，大家都能看到、都能新增</small>';
-        placeNotesBoard.open('busan-place-notes/'+encodeURIComponent(placeId));
+        placeMemo.open('busan-place-memo/'+encodeURIComponent(placeId), label);
       });
     })();
   </script>
