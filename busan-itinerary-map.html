@@ -643,21 +643,23 @@
       // ---- 美食圖片預覽：桌機滑鼠移入浮動小卡，手機點擊展開內嵌列 ----
       const isHoverDevice = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
       const foodImgCache = new Map(); // id -> { src, source } | null(查無圖片) | undefined(尚未查詢)
+      async function queryThumbnail(apiBase, term){
+        const url = apiBase+'?action=query&generator=search&gsrsearch='+encodeURIComponent(term)+'&gsrlimit=1&prop=pageimages&piprop=thumbnail&pithumbsize=300&format=json&origin=*';
+        const res = await fetch(url);
+        const data = await res.json();
+        const pages = data && data.query && data.query.pages;
+        const page = pages ? Object.values(pages)[0] : null;
+        return (page && page.thumbnail && page.thumbnail.source) ? { src: page.thumbnail.source } : null;
+      }
       async function fetchFoodImage(koTerm){
         if(foodImgCache.has(koTerm)) return foodImgCache.get(koTerm);
-        try {
-          const url = 'https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch='+encodeURIComponent(koTerm)+'&gsrlimit=1&prop=pageimages&piprop=thumbnail&pithumbsize=300&format=json&origin=*';
-          const res = await fetch(url);
-          const data = await res.json();
-          const pages = data && data.query && data.query.pages;
-          const page = pages ? Object.values(pages)[0] : null;
-          const result = (page && page.thumbnail && page.thumbnail.source) ? { src: page.thumbnail.source } : null;
-          foodImgCache.set(koTerm, result);
-          return result;
-        } catch(err){
-          foodImgCache.set(koTerm, null);
-          return null;
-        }
+        let result = null;
+        // 韓文維基百科：對韓國美食條目的覆蓋率最好，優先查這裡
+        try { result = await queryThumbnail('https://ko.wikipedia.org/w/api.php', koTerm); } catch(err){ result = null; }
+        // 找不到的話，退而求其次查 Wikimedia Commons 圖庫
+        if(!result){ try { result = await queryThumbnail('https://commons.wikimedia.org/w/api.php', koTerm); } catch(err){ result = null; } }
+        foodImgCache.set(koTerm, result);
+        return result;
       }
       function googleImgUrl(koTerm){ return 'https://www.google.com/search?tbm=isch&q='+encodeURIComponent(koTerm); }
       function previewInnerHtml(state, koTerm, cnName){
