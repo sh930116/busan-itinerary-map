@@ -71,6 +71,17 @@
     .fl-ko-btn { background:var(--soft); border:1px solid var(--line); border-radius:6px; color:var(--accent); cursor:pointer; font:inherit; font-size:13px; font-weight:600; padding:4px 8px; white-space:nowrap; }
     .fl-ko-btn:hover { background:var(--accent); border-color:var(--accent); color:#fff; }
     .fl-ko-btn.copied { background:#2e8b57; border-color:#2e8b57; color:#fff; }
+    .fl-cn { border-bottom:1px dashed var(--accent); cursor:pointer; }
+    #food-img-tooltip { background:#fff; border:1px solid var(--line); border-radius:10px; box-shadow:0 12px 28px rgba(0,0,0,.22); display:none; padding:10px; position:fixed; width:200px; z-index:3000; }
+    #food-img-tooltip.show { display:block; }
+    #food-img-tooltip img { border-radius:6px; display:block; height:140px; object-fit:cover; width:100%; }
+    #food-img-tooltip .fl-tip-caption { color:var(--muted); font-size:11.5px; margin-top:6px; text-align:center; }
+    #food-img-tooltip .fl-tip-link { color:var(--accent); display:block; font-size:12px; margin-top:4px; text-align:center; text-decoration:none; }
+    #food-img-tooltip .fl-tip-loading, #food-img-tooltip .fl-tip-empty { color:var(--muted); font-size:12px; padding:20px 0; text-align:center; }
+    .fl-preview-row td { background:var(--soft); padding:12px !important; text-align:center; }
+    .fl-preview-row img { border-radius:8px; display:block; height:160px; margin:0 auto; object-fit:cover; width:220px; max-width:100%; }
+    .fl-preview-row .fl-tip-caption, .fl-preview-row .fl-tip-loading, .fl-preview-row .fl-tip-empty { color:var(--muted); font-size:12px; margin-top:6px; }
+    .fl-preview-row .fl-tip-link { color:var(--accent); display:inline-block; font-size:12.5px; margin-top:6px; }
     .place-row { display:flex; align-items:stretch; gap:6px; margin:6px 0; }
     .place-row .place { flex:1 1 auto; min-width:0; margin:0; width:auto; }
     .place-note-btn { align-items:center; background:var(--soft); border:1px solid var(--line); border-radius:8px; color:var(--accent); cursor:pointer; display:flex; flex:0 0 auto; font-size:16px; font-weight:800; justify-content:center; width:36px; }
@@ -430,7 +441,7 @@
   <div id="food-list-overlay" class="board-overlay">
     <div id="food-list-modal" class="board-modal" role="dialog" aria-label="釜山美食清單">
       <header>
-        <h3>釜山美食清單<small>點韓文名稱可直接複製，方便貼給店家或搜尋地圖</small></h3>
+        <h3>釜山美食清單<small>中文名稱可查看圖片，韓文名稱點擊可複製</small></h3>
         <button id="food-list-close" class="board-close" type="button" aria-label="關閉">✕</button>
       </header>
       <input id="food-list-search" type="text" placeholder="搜尋中文／韓文／說明…">
@@ -443,6 +454,7 @@
       </div>
     </div>
   </div>
+  <div id="food-img-tooltip"></div>
   <script>
     (function(){
       // ====== 請先到 https://console.firebase.google.com/ 建立一個免費專案，
@@ -597,7 +609,7 @@
         const rows = FOOD_LIST.filter(r => !q || r[1].toLowerCase().includes(q) || r[2].toLowerCase().includes(q) || r[3].toLowerCase().includes(q));
         countEl.textContent = '共 '+rows.length+' 項'+(q?'（篩選中）':'');
         tbody.innerHTML = rows.map(r => (
-          '<tr><td class="fl-id">'+r[0]+'</td><td>'+r[1]+'</td><td><button type="button" class="fl-ko-btn" data-ko="'+r[2].replace(/"/g,'&quot;')+'">'+r[2]+'</button></td><td class="fl-desc">'+r[3]+'</td></tr>'
+          '<tr data-row-id="'+r[0]+'"><td class="fl-id">'+r[0]+'</td><td><span class="fl-cn" data-id="'+r[0]+'">'+r[1]+'</span></td><td><button type="button" class="fl-ko-btn" data-ko="'+r[2].replace(/"/g,'&quot;')+'">'+r[2]+'</button></td><td class="fl-desc">'+r[3]+'</td></tr>'
         )).join('');
       }
       const foodListOverlay = document.getElementById('food-list-overlay');
@@ -627,6 +639,88 @@
           setTimeout(() => { btn.textContent = ko; }, 1200);
         });
       });
+
+      // ---- 美食圖片預覽：桌機滑鼠移入浮動小卡，手機點擊展開內嵌列 ----
+      const isHoverDevice = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+      const foodImgCache = new Map(); // id -> { src, source } | null(查無圖片) | undefined(尚未查詢)
+      async function fetchFoodImage(koTerm){
+        if(foodImgCache.has(koTerm)) return foodImgCache.get(koTerm);
+        try {
+          const url = 'https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch='+encodeURIComponent(koTerm)+'&gsrlimit=1&prop=pageimages&piprop=thumbnail&pithumbsize=300&format=json&origin=*';
+          const res = await fetch(url);
+          const data = await res.json();
+          const pages = data && data.query && data.query.pages;
+          const page = pages ? Object.values(pages)[0] : null;
+          const result = (page && page.thumbnail && page.thumbnail.source) ? { src: page.thumbnail.source } : null;
+          foodImgCache.set(koTerm, result);
+          return result;
+        } catch(err){
+          foodImgCache.set(koTerm, null);
+          return null;
+        }
+      }
+      function googleImgUrl(koTerm){ return 'https://www.google.com/search?tbm=isch&q='+encodeURIComponent(koTerm); }
+      function previewInnerHtml(state, koTerm, cnName){
+        const googleLink = '<a class="fl-tip-link" href="'+googleImgUrl(koTerm)+'" target="_blank" rel="noopener">用「'+koTerm+'」到 Google 搜圖 ↗</a>';
+        if(state === 'loading') return '<div class="fl-tip-loading">圖片載入中…</div>';
+        if(!state) return '<div class="fl-tip-empty">找不到現成圖片</div>'+googleLink;
+        return '<img src="'+state.src+'" alt="'+cnName+'" loading="lazy">'+'<div class="fl-tip-caption">'+cnName+'（'+koTerm+'）</div>'+googleLink;
+      }
+
+      // 桌機：浮動提示框跟著游標
+      const imgTooltip = document.getElementById('food-img-tooltip');
+      let tooltipToken = 0;
+      function positionTooltip(x, y){
+        const pad = 14, w = 200, h = 210;
+        let left = x + pad, top = y + pad;
+        if(left + w > window.innerWidth) left = x - w - pad;
+        if(top + h > window.innerHeight) top = y - h - pad;
+        imgTooltip.style.left = Math.max(8, left) + 'px';
+        imgTooltip.style.top = Math.max(8, top) + 'px';
+      }
+      function hideTooltip(){ imgTooltip.classList.remove('show'); }
+      if(isHoverDevice){
+        document.getElementById('food-list-tbody').addEventListener('mouseover', e => {
+          const cn = e.target.closest('.fl-cn');
+          if(!cn) return;
+          const row = FOOD_LIST.find(r => String(r[0]) === cn.dataset.id);
+          if(!row) return;
+          const myToken = ++tooltipToken;
+          imgTooltip.innerHTML = previewInnerHtml('loading');
+          imgTooltip.classList.add('show');
+          fetchFoodImage(row[2]).then(result => {
+            if(myToken !== tooltipToken) return; // 使用者已經移到別的項目，結果過期就不顯示
+            imgTooltip.innerHTML = previewInnerHtml(result, row[2], row[1]);
+          });
+        });
+        document.getElementById('food-list-tbody').addEventListener('mousemove', e => {
+          if(e.target.closest('.fl-cn') || imgTooltip.classList.contains('show')) positionTooltip(e.clientX, e.clientY);
+        });
+        document.getElementById('food-list-tbody').addEventListener('mouseout', e => {
+          if(e.target.closest('.fl-cn') && !e.relatedTarget?.closest('.fl-cn')) hideTooltip();
+        });
+        document.getElementById('food-list-table-wrap').addEventListener('scroll', hideTooltip);
+      } else {
+        // 手機／觸控：點擊中文名稱在該列下方展開圖片預覽（再點一次收合）
+        document.getElementById('food-list-tbody').addEventListener('click', e => {
+          const cn = e.target.closest('.fl-cn');
+          if(!cn) return;
+          const tr = cn.closest('tr');
+          const nextRow = tr.nextElementSibling;
+          if(nextRow && nextRow.classList.contains('fl-preview-row')){ nextRow.remove(); return; }
+          document.querySelectorAll('.fl-preview-row').forEach(el => el.remove());
+          const row = FOOD_LIST.find(r => String(r[0]) === cn.dataset.id);
+          if(!row) return;
+          const previewRow = document.createElement('tr');
+          previewRow.className = 'fl-preview-row';
+          previewRow.innerHTML = '<td colspan="4">'+previewInnerHtml('loading')+'</td>';
+          tr.insertAdjacentElement('afterend', previewRow);
+          fetchFoodImage(row[2]).then(result => {
+            if(!previewRow.isConnected) return;
+            previewRow.innerHTML = '<td colspan="4">'+previewInnerHtml(result, row[2], row[1])+'</td>';
+          });
+        });
+      }
     })();
   </script>
 </body>
