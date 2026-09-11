@@ -10,10 +10,11 @@
     * { box-sizing:border-box; }
     html, body { max-width:100%; overflow-x:hidden; }
     body { margin:0; color:var(--ink); background:#f6f7f9; font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","Microsoft JhengHei",sans-serif; }
-    header { padding:20px 26px 14px; background:var(--surface); border-bottom:1px solid var(--line); }
+    header { padding:20px 26px 14px; background:var(--surface); border-bottom:1px solid var(--line); position:relative; }
     .title-row { align-items:center; display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; }
     .text-file-link { border:1px solid var(--line); border-radius:8px; color:var(--ink); cursor:pointer; font:inherit; font-size:13px; padding:7px 10px; text-decoration:none; white-space:nowrap; }
     .header-actions { align-items:center; display:flex; flex-wrap:wrap; gap:8px; }
+    #header-menu-toggle { display:none; }
     h1 { margin:0 0 6px; font-size:23px; font-weight:700; }
     header p { margin:0; color:var(--muted); font-size:14px; }
     .layout { display:grid; grid-template-columns:minmax(310px, 43%) 1fr; gap:0; height:calc(100vh - 92px); }
@@ -120,12 +121,18 @@
     .leaflet-popup-content { font-family:inherit; }
     .leaflet-popup-content b { display:block; margin-bottom:3px; }
     @media (max-width:760px) {
-      header { padding:14px 16px 10px; }
-      h1 { font-size:18px; }
+      header { padding:10px 14px 8px; position:relative; }
+      h1 { font-size:16px; margin:0; }
       header p { font-size:12.5px; }
+      .title-row { gap:8px; }
+      #header-menu-toggle { background:var(--soft); border:1px solid var(--line); border-radius:8px; color:var(--ink); cursor:pointer; display:inline-flex; flex:0 0 auto; font:inherit; font-size:12.5px; padding:6px 10px; }
+      #header-menu-toggle.open { background:var(--accent); border-color:var(--accent); color:#fff; }
+      .header-actions { background:#fff; border:1px solid var(--line); border-radius:10px; box-shadow:0 10px 26px rgba(0,0,0,.16); display:none; flex-direction:column; align-items:stretch; gap:6px; padding:10px; position:absolute; right:14px; top:calc(100% - 4px); width:180px; z-index:600; }
+      .header-actions.open { display:flex; }
+      .header-actions .text-file-link { text-align:center; }
       .layout { grid-template-columns:1fr; }
-      .itinerary { border-right:0; border-bottom:1px solid var(--line); height:30vh; max-height:30vh; padding:12px; }
-      .map-area { height:60vh; }
+      .itinerary { border-right:0; border-bottom:1px solid var(--line); height:32vh; max-height:32vh; padding:12px; }
+      .map-area { height:62vh; }
       .map-tools { flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; padding:7px 10px; gap:5px; }
       .map-tools::-webkit-scrollbar { display:none; }
       .map-tools button, .map-tools a { flex:0 0 auto; font-size:11.5px; padding:5px 8px; }
@@ -141,11 +148,14 @@
       #life-categories::-webkit-scrollbar { display:none; }
       #life-categories .life-cat { flex:0 0 auto; }
     }
+    @media (min-width:761px) {
+      #header-menu-toggle { display:none; }
+    }
   </style>
 </head>
 <body>
   <header>
-    <div class="title-row"><h1>釜山 8 天 7 夜｜互動行程地圖（修訂版）</h1><span class="header-actions"><a class="text-file-link" href="busan-itinerary.txt" target="_blank" rel="noopener">行程</a><button id="life-button" class="text-file-link" type="button">吃吃喝喝</button><a class="text-file-link" href="https://xn--v69ak0xskm.com/map" target="_blank" rel="noopener">乞丐地圖</a><button id="must-have-button" class="text-file-link" type="button">留言板</button><a class="text-file-link" href="https://drive.google.com/drive/folders/1Bh4U7dCRlr2gKHtS0-x2CknwmzGb7322?usp=drive_link" target="_blank" rel="noopener">雲端</a><button id="food-list-button" class="text-file-link" type="button">美食清單</button><button id="food-wheel-button" class="text-file-link" type="button">吃什麼轉盤</button></span></div>
+    <div class="title-row"><h1>釜山 8 天 7 夜｜互動行程地圖（修訂版）</h1><button id="header-menu-toggle" type="button" aria-label="更多功能" aria-expanded="false">☰ 更多</button><span class="header-actions" id="header-actions"><a class="text-file-link" href="busan-itinerary.txt" target="_blank" rel="noopener">行程</a><button id="life-button" class="text-file-link" type="button">吃吃喝喝</button><a class="text-file-link" href="https://xn--v69ak0xskm.com/map" target="_blank" rel="noopener">乞丐地圖</a><button id="must-have-button" class="text-file-link" type="button">留言板</button><a class="text-file-link" href="https://drive.google.com/drive/folders/1Bh4U7dCRlr2gKHtS0-x2CknwmzGb7322?usp=drive_link" target="_blank" rel="noopener">雲端</a><button id="food-list-button" class="text-file-link" type="button">美食清單</button><button id="food-wheel-button" class="text-file-link" type="button">吃什麼轉盤</button></span></div>
   </header>
   <main class="layout">
     <section class="itinerary" id="itinerary" aria-label="行程">
@@ -574,6 +584,15 @@
 
         return { open(dbPath){ overlay.classList.add('open'); connect(dbPath); setTimeout(()=>textInput.focus(),0); }, close };
       }
+
+      // ---- 手機版：更多功能選單展開/收合 ----
+      const headerMenuToggle = document.getElementById('header-menu-toggle');
+      const headerActions = document.getElementById('header-actions');
+      function closeHeaderMenu(){ headerActions.classList.remove('open'); headerMenuToggle.classList.remove('open'); headerMenuToggle.setAttribute('aria-expanded','false'); }
+      function toggleHeaderMenu(){ const open = headerActions.classList.toggle('open'); headerMenuToggle.classList.toggle('open', open); headerMenuToggle.setAttribute('aria-expanded', open ? 'true' : 'false'); }
+      headerMenuToggle.addEventListener('click', toggleHeaderMenu);
+      headerActions.addEventListener('click', e => { if(e.target.closest('a, button')) closeHeaderMenu(); });
+      document.addEventListener('click', e => { if(!e.target.closest('.title-row') && headerActions.classList.contains('open')) closeHeaderMenu(); });
 
       const mustHaveBoard = createBoard('must-have');
       document.getElementById('must-have-button').addEventListener('click', () => mustHaveBoard.open('busan-must-have-notes'));
