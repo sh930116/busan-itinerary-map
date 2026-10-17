@@ -71,6 +71,11 @@
     #food-list-table td.fl-desc { color:var(--muted); font-size:12px; line-height:1.5; }
     .fl-ko-btn { background:var(--soft); border:1px solid var(--line); border-radius:6px; color:var(--accent); cursor:pointer; font:inherit; font-size:13px; font-weight:600; padding:4px 8px; white-space:nowrap; }
     .fl-ko-btn:hover { background:var(--accent); border-color:var(--accent); color:#fff; }
+    .leg-est { border-bottom:1px dotted currentColor; cursor:help; }
+    .leg-warn { color:#d9822b; cursor:help; font-weight:800; }
+    .leg-warn-line { color:#c26a12; }
+    .leg-est-line { color:var(--muted); font-size:11.5px; }
+    .geo-status { background:var(--soft); border-radius:8px; color:var(--muted); font-size:12.5px; margin-bottom:10px; padding:8px 10px; }
     .fl-ko-btn.copied { background:#2e8b57; border-color:#2e8b57; color:#fff; }
     #food-wheel-modal { max-width:400px; }
     #wheel-cat-tabs { display:flex; flex-wrap:wrap; gap:8px; padding:14px 18px 0; }
@@ -190,7 +195,8 @@
   <script>
     const places = {
       angel:{name:'Hotel Angel（西面）',q:'Hotel Angel Seomyeon Busan',qko:'호텔 엔젤 서면',lat:35.1550,lng:129.0585},
-      lenith:{name:'HOTEL LENITH Seomyeon',q:'HOTEL LENITH Seomyeon Busan',qko:'호텔 레니스 서면',lat:35.1560,lng:129.0607},
+      lenith:{name:'HOTEL LENITH Seomyeon',q:'HOTEL LENITH Seomyeon, 24-9 Jungang-daero 691beonga-gil, Busanjin-gu, Busan',qko:'부산 부산진구 중앙대로691번가길 24-9',lat:35.15554,lng:129.056084},
+      travelight:{name:'TraveLight旅館（西面）',q:'TraveLight Hostel, 52 Seomyeon-ro 68beon-gil, Busanjin-gu, Busan',qko:'부산 부산진구 서면로68번길 52',lat:35.154693,lng:129.058237},
       seomyeon:{name:'西面站／西面一號街',q:'Seomyeon Station, Busan',qko:'서면역',lat:35.1579,lng:129.0596},
       huinnyeoul:{name:'白淺灘文化村',q:'Huinnyeoul Culture Village, Busan',qko:'흰여울문화마을',lat:35.0782,lng:129.0450},
       gamcheon:{name:'甘川文化村',q:'Gamcheon Culture Village, Busan',qko:'감천문화마을',lat:35.0976,lng:129.0107},
@@ -228,6 +234,7 @@
     function setActiveButton(mode){ overviewButton.classList.toggle('active', mode==='overview'); googleButton.classList.toggle('active', mode==='google'); naverButton.classList.toggle('active', mode==='naver'); foodButton.classList.toggle('active', mode==='food'); lifeButton.classList.toggle('active', mode==='life'); openGoogle.style.display = (mode==='naver'||mode==='food'||mode==='life') ? 'none' : ''; openNaver.style.display = mode==='naver' ? '' : 'none'; openFood.style.display = mode==='food' ? '' : 'none'; openLife.style.display = mode==='life' ? '' : 'none'; lifeCategories.style.display = mode==='life' ? 'flex' : 'none'; currentMode = mode; }
     function showOverview(){ overview.style.display='block'; frame.style.display='none'; naverPanel.style.display='none'; foodPanel.style.display='none'; setActiveButton('overview'); selectedName.textContent='目前顯示全部行程地點'; setTimeout(()=>{ map.invalidateSize(); const bounds = Object.values(markers).map(m=>m.getLatLng()); if(bounds.length) map.fitBounds(bounds, {padding:[24,24]}); },0); }
     function googleQuery(place){
+      if(place.auto) return place.lat+','+place.lng;
       const ko = place.qko;
       if(ko) return ko.includes('부산') ? ko : ko+' 부산';
       return place.q;
@@ -304,8 +311,10 @@
       const groundText = (toStop.transit || '') + ' ' + (toStop.desc || '');
       if(/走路|走到|步行|도보/.test(groundText)) return 'walking';
       if(/計程車|taxi|택시/.test(groundText)) return 'driving';
-      if(/地鐵|捷運|輕軌|列車|藍線|東海線|경전철|전철|호선|블루라인|동해선|轉乘|接駁|直達|坐\s*\d+\s*站/.test(groundText)) return 'subway';
+      // 明確的軌道交通字眼 → 地鐵；有寫公車／巴士 → 公車；最後才看「轉乘／接駁／坐N站」這種搭乘動詞（公車也會用，不能單獨當地鐵）
+      if(/地鐵|捷運|輕軌|列車|藍線|東海線|경전철|전철|호선|블루라인|동해선|直達/.test(groundText)) return 'subway';
       if(/巴士|公車|버스/.test(groundText)) return 'bus';
+      if(/轉乘|接駁|坐\s*\d+\s*站/.test(groundText)) return 'subway';
       return null;
     }
     function transitIconsHtml(groundText, flightText, mode){
@@ -324,21 +333,62 @@
       if(m[3]) return parseInt(m[3],10);
       return 0;
     }
+    // ---- 沒寫交通方式時，依兩地座標預估通勤方式與時間（粗估，非即時路線） ----
+    function haversineM(a, b){ const R=6371000, rad=x=>x*Math.PI/180; const dLat=rad(b.lat-a.lat), dLng=rad(b.lng-a.lng); const s=Math.sin(dLat/2)**2+Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(dLng/2)**2; return 2*R*Math.asin(Math.sqrt(s)); }
+    function estimateLeg(a, b, preferred){
+      if(!a || !b) return null;
+      const d = haversineM(a, b);
+      if(d < 60) return null; // 同一個地點，不用通勤
+      const pathKm = d*1.3/1000;
+      const mode = preferred || (d < 1200 ? 'walking' : 'subway');
+      let minutes;
+      if(mode==='walking') minutes = (d*1.25)/80;
+      else if(mode==='driving') minutes = 5 + pathKm/35*60;
+      else if(mode==='bus') minutes = 8 + pathKm/20*60;
+      else minutes = 9 + pathKm/32*60;
+      return { mode, minutes: Math.max(1, Math.round(minutes)), distM: Math.round(d) };
+    }
+    function legInfo(fromStop, toStop){
+      if(!fromStop || !toStop) return null;
+      const groundText = (toStop.transit || '') + ' ' + (toStop.desc || '');
+      const flightText = (fromStop.desc || '') + ' ' + groundText;
+      const isFlight = /起飛|降落|登機|報到|託運|航班|flight/i.test(flightText);
+      const explicit = detectPrimaryMode(fromStop, toStop);
+      let gap = timeToMinutes(toStop.time) - timeToMinutes(fromStop.time);
+      if(gap!=null && gap<0) gap += 24*60;
+      let sched = null;
+      if(gap!=null){ const s = gap - parseStayMinutes(fromStop.desc); if(s>0) sched = s; }
+      const a = places[matchPlace(fromStop.name)], b = places[matchPlace(toStop.name)];
+      // 顯示用的圖示依你的規則（有寫走路就是走路）；但預估時間要看實際搭的交通：
+      // 例如「地鐵轉乘…出口走路約 6 分鐘」其實主要是搭地鐵，不能拿去算成整段走路
+      let estMode = explicit;
+      if(explicit === 'walking'){
+        if(/計程車|taxi|택시/.test(groundText)) estMode = 'driving';
+        else if(/地鐵|捷運|輕軌|列車|藍線|東海線|경전철|전철|호선|블루라인|동해선|直達/.test(groundText)) estMode = 'subway';
+        else if(/巴士|公車|버스/.test(groundText)) estMode = 'bus';
+      }
+      const est = isFlight ? null : estimateLeg(a, b, estMode);
+      const mode = explicit || (est ? est.mode : null);
+      let minutes = sched, estimated = false;
+      if(est && (!explicit || minutes==null)){ minutes = est.minutes; estimated = true; }
+      let warn = null;
+      if(est && est.minutes >= 8 && (sched==null || (sched <= est.minutes*0.6 && est.minutes - sched >= 8))){
+        warn = '預估通勤約 '+est.minutes+' 分（依兩地直線距離粗估），行程只留 '+(sched==null?0:sched)+' 分，可能太趕';
+      }
+      return { mode, minutes, estimated, warn, isFlight, est };
+    }
     function buildSuffix(fromStop, toStop){
       if(!toStop) return '';
-      let durationMins = null;
-      if(fromStop && toStop){
-        let gap = timeToMinutes(toStop.time) - timeToMinutes(fromStop.time);
-        if(gap!=null && gap<0) gap += 24*60;
-        if(gap!=null){ const stay = parseStayMinutes(fromStop.desc); durationMins = gap - stay; if(durationMins<=0) durationMins = null; }
-      }
-      const durationText = formatDuration(durationMins);
+      const info = legInfo(fromStop, toStop);
       const groundText = (toStop.transit || '') + ' ' + (toStop.desc || '');
       const flightText = (fromStop ? fromStop.desc || '' : '') + ' ' + groundText;
-      const mode = detectPrimaryMode(fromStop, toStop);
-      const iconsHtml = transitIconsHtml(groundText, flightText, mode);
+      const iconsHtml = transitIconsHtml(groundText, flightText, info.mode);
+      const durationText = formatDuration(info.minutes);
       if(!iconsHtml && !durationText) return '';
-      return '　（' + iconsHtml + (durationText ? (iconsHtml?' ':'') + durationText : '') + '）';
+      let timeHtml = '';
+      if(durationText){ timeHtml = info.estimated ? '<span class="leg-est" title="通勤時間為系統依兩地距離自動預估">約'+durationText+'</span>' : durationText; }
+      const warnHtml = info.warn ? ' <span class="leg-warn" title="'+info.warn+'">⚠</span>' : '';
+      return '　（' + iconsHtml + (timeHtml ? (iconsHtml?' ':'') + timeHtml : '') + warnHtml + '）';
     }
     function parseItinerary(text){
       const dayHeaderRe = /^Day\s*(\d+)｜([^\n]*)$/gm;
@@ -353,13 +403,92 @@
           const body = line.slice(2);
           const parts = body.split('｜').map(s=>s.trim());
           if(!/^\d{1,2}:\d{2}$/.test(parts[0]||'')) return null;
-          return { time:parts[0], name:parts[1]||'', desc:parts[2]||'', transit:parts[3]||'' };
+          return { time:parts[0], name:parts[1]||'', desc:parts[2]||'', transit:parts[3]||'', loc:parts[4]||'' };
         }).filter(Boolean);
         if(stops.length) days.push({ num:h.num, title:h.title, stops });
       });
       return days;
     }
-    function renderItinerary(days){
+    // ---- 新地點自動查座標（OpenStreetMap Nominatim，免金鑰，結果會記在瀏覽器裡） ----
+    const NO_MAP_NAMES = new Set(['桃園機場']);
+    const NO_MAP_LOC = /^(無|不定位|略過|skip|-)$/i;
+    const GEO_CACHE_KEY = 'busan-geocode-cache-v1';
+    const GEO_FAIL_RETRY_MS = 24*60*60*1000;
+    const geoFailedNames = new Set();
+    function isNoMapStop(stop){ return NO_MAP_NAMES.has(stop.name) || NO_MAP_LOC.test((stop.loc||'').trim()); }
+    function loadGeoCache(){ try { return JSON.parse(localStorage.getItem(GEO_CACHE_KEY) || '{}'); } catch(e){ return {}; } }
+    function saveGeoCache(c){ try { localStorage.setItem(GEO_CACHE_KEY, JSON.stringify(c)); } catch(e){} }
+    function inBusanArea(lat, lng){ return lat>=34.85 && lat<=35.45 && lng>=128.75 && lng<=129.40; }
+    function parseLatLng(s){ const m=(s||'').match(/(-?\d{1,3}\.\d+)\s*[,，\s]\s*(-?\d{1,3}\.\d+)/); if(!m) return null; const lat=parseFloat(m[1]), lng=parseFloat(m[2]); return (isFinite(lat) && isFinite(lng) && inBusanArea(lat,lng)) ? {lat,lng} : null; }
+    function geoQueryVariants(stop){
+      const v = []; const add = s => { s=(s||'').trim(); if(s && !v.includes(s)) v.push(s); };
+      if(stop.loc && !parseLatLng(stop.loc)) add(stop.loc);
+      add(stop.name);
+      add(stop.name.replace(/[（(].*?[）)]/g,''));
+      (stop.name.match(/[\uac00-\ud7a3][\uac00-\ud7a3\s·]*/g) || []).forEach(add);
+      return v.slice(0,3);
+    }
+    async function nominatimSearch(q){
+      const url = 'https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=kr&accept-language=ko,en&bounded=1&viewbox=128.75,35.45,129.40,34.85&q='+encodeURIComponent(q);
+      const res = await fetch(url);
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const arr = await res.json();
+      if(Array.isArray(arr) && arr[0]){
+        const lat = parseFloat(arr[0].lat), lng = parseFloat(arr[0].lon);
+        if(isFinite(lat) && isFinite(lng) && inBusanArea(lat,lng)) return { lat, lng, label: arr[0].display_name || q };
+      }
+      return null;
+    }
+    const geoSleep = ms => new Promise(r => setTimeout(r, ms));
+    function autoPlaceId(name){ return 'auto-'+name.trim().replace(/[^\w\u4e00-\u9fff\uac00-\ud7a3]+/g,'-').replace(/^-+|-+$/g,''); }
+    function registerAutoPlace(stop, lat, lng, label){
+      const id = autoPlaceId(stop.name);
+      const addr = (stop.loc && !parseLatLng(stop.loc) && !NO_MAP_LOC.test(stop.loc.trim())) ? stop.loc.trim() : '';
+      places[id] = { name: stop.name, q: stop.name, qko: addr || label || '', lat, lng, auto: true, geoLabel: label || '' };
+      ALIASES[stop.name] = id;
+      return id;
+    }
+    function needsGeocode(days){ return days.some(d => d.stops.some(s => s.name && !matchPlace(s.name) && !isNoMapStop(s))); }
+    async function resolveAutoPlaces(days, onProgress){
+      const cache = loadGeoCache();
+      const todo = new Map();
+      days.forEach(d => d.stops.forEach(s => { if(s.name && !matchPlace(s.name) && !isNoMapStop(s) && !todo.has(s.name)) todo.set(s.name, s); }));
+      let added = false, networkCalls = 0, netErrors = 0, aborted = false;
+      geoFailedNames.clear();
+      for(const [name, stop] of todo){
+        const direct = parseLatLng(stop.loc);
+        if(direct){ registerAutoPlace(stop, direct.lat, direct.lng, '文字檔指定座標'); added = true; continue; }
+        let found = null;
+        if(!aborted){
+          for(const q of geoQueryVariants(stop)){
+            const c = cache[q];
+            if(c && c.lat!=null){ found = c; break; }
+            if(c && c.lat==null && (Date.now() - c.t) < GEO_FAIL_RETRY_MS) continue;
+            try {
+              if(networkCalls > 0) await geoSleep(1100);
+              networkCalls++;
+              if(onProgress) onProgress(name);
+              const r = await nominatimSearch(q);
+              netErrors = 0;
+              cache[q] = r ? { lat:r.lat, lng:r.lng, label:r.label, t:Date.now() } : { lat:null, t:Date.now() };
+              saveGeoCache(cache);
+              if(r){ found = cache[q]; break; }
+            } catch(err){
+              console.warn('geocode failed', q, err);
+              if(++netErrors >= 2){ aborted = true; break; }
+            }
+          }
+        }
+        if(found){ registerAutoPlace(stop, found.lat, found.lng, found.label); added = true; }
+        else geoFailedNames.add(name);
+      }
+      return added;
+    }
+    function showGeoStatus(msg){ const c = document.getElementById('itinerary'); let el = document.getElementById('geo-status'); if(!el){ el = document.createElement('div'); el.id = 'geo-status'; el.className = 'geo-status'; c.insertBefore(el, c.firstChild); } el.textContent = msg; }
+    function hideGeoStatus(){ const el = document.getElementById('geo-status'); if(el) el.remove(); }
+    function escHtml(s){ return String(s||'').replace(/[&<>]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[ch])); }
+    function renderItinerary(days, opts){
+      opts = opts || {};
       const container = document.getElementById('itinerary');
       container.innerHTML = '';
       let unmatchedCount = 0;
@@ -374,15 +503,18 @@
           const placeId = matchPlace(stop.name);
           const nextStop = day.stops[i+1];
           const suffix = buildSuffix(stop, nextStop);
+          const info = nextStop ? legInfo(stop, nextStop) : null;
           if(placeId && nextStop){
             const nextPlaceId = matchPlace(nextStop.name);
             if(nextPlaceId && nextPlaceId !== placeId){
-              const mode = detectPrimaryMode(stop, nextStop);
-              if(mode) transitModeByPair.set(placeId+'>'+nextPlaceId, mode);
+              if(info && info.mode) transitModeByPair.set(placeId+'>'+nextPlaceId, info.mode);
             }
           }
           const smallParts = [stop.time+'｜'+stop.desc];
           if(stop.transit) smallParts.push('交通：'+stop.transit);
+          if(info && info.warn) smallParts.push('<span class="leg-warn-line">⚠ '+info.warn+'</span>');
+          if(info && info.estimated) smallParts.push('<span class="leg-est-line">通勤時間為系統依兩地距離自動預估，僅供參考</span>');
+          if(placeId && places[placeId] && places[placeId].auto) smallParts.push('<span class="leg-est-line">📍 座標由系統自動查詢'+(places[placeId].geoLabel ? '：'+escHtml(places[placeId].geoLabel.slice(0,40)) : '')+'；位置若不對，請在該行最後加上「地址」或「緯度,經度」</span>');
           const smallHtml = smallParts.join('<br>');
           if(placeId){
             const p = places[placeId];
@@ -399,11 +531,12 @@
             row.appendChild(noteBtn);
             dayEl.appendChild(row);
           } else {
-            unmatchedCount++;
+            const noMap = isNoMapStop(stop);
+            if(!noMap) unmatchedCount++;
             const div = document.createElement('div');
             div.className = 'place place-unmatched';
             div.style.opacity = '.65'; div.style.cursor = 'default';
-            div.innerHTML = '<strong>'+stop.name+suffix+'</strong><small>'+smallHtml+'（尚未對應地圖座標，僅顯示文字）</small>';
+            div.innerHTML = '<strong>'+stop.name+suffix+'</strong><small>'+smallHtml+(noMap ? '（不在釜山地圖範圍，僅顯示文字）' : '（尚未對應地圖座標，僅顯示文字）')+'</small>';
             const row = document.createElement('div');
             row.className = 'place-row';
             row.appendChild(div);
@@ -416,7 +549,14 @@
         });
         container.appendChild(dayEl);
       });
-      if(unmatchedCount>0){ const note=document.createElement('p'); note.style.cssText='color:var(--muted);font-size:12px;margin-top:10px;'; note.textContent='有 '+unmatchedCount+' 個地點在文字檔裡找不到對應的地圖座標，已用文字顯示。'; container.appendChild(note); }
+      if(unmatchedCount>0 && !opts.pending){
+        const note = document.createElement('p'); note.style.cssText = 'color:var(--muted);font-size:12px;margin-top:10px;line-height:1.6;';
+        const failed = [...geoFailedNames];
+        note.textContent = failed.length
+          ? '有 '+failed.length+' 個新地點自動查不到座標（'+failed.join('、')+'），目前只顯示文字。請在該行最後面加一欄「韓文店名／地址」或「緯度,經度」，例如：｜부산 부산진구 서면로68번길 52'
+          : '有 '+unmatchedCount+' 個地點沒有對應的地圖座標，已用文字顯示。';
+        container.appendChild(note);
+      }
     }
     async function initItinerary(){
       const status = document.getElementById('itinerary-status');
@@ -427,7 +567,14 @@
         const days = parseItinerary(text);
         if(!days.length) throw new Error('沒有解析到任何 Day 行程');
         if(status) status.remove();
-        renderItinerary(days);
+        const pending = needsGeocode(days);
+        renderItinerary(days, { pending });
+        if(pending){
+          showGeoStatus('正在自動查詢新地點的座標…');
+          try { await resolveAutoPlaces(days, n => showGeoStatus('正在查詢座標：'+n+' …')); } catch(err){ console.warn('resolveAutoPlaces error', err); }
+          hideGeoStatus();
+          renderItinerary(days);
+        }
       } catch(err) {
         if(status) status.innerHTML = '⚠️ 行程文字檔載入失敗（'+err.message+'）。請確認 busan-itinerary.txt 是否跟這個網頁在同一個資料夾／同一個 GitHub 位置，且格式符合說明。<br><br><a href="busan-itinerary.txt" target="_blank" rel="noopener">直接開啟文字檔看看</a>';
         console.error('itinerary load failed', err);
